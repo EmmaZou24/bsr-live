@@ -1,0 +1,27 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  background: #0c0c0c;
+  color: #e8e8e8;
+  font-family: system-ui, sans-serif;
+}
+
+#app {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#app p {
+  margin: 0;
+  font-size: 1rem;
+}
