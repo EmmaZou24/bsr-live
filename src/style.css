@@ -16,12 +16,4 @@ body {
 
 #app {
   min-height: 100svh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#app p {
-  margin: 0;
-  font-size: 1rem;
 }

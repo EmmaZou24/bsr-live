@@ -1,0 +1,49 @@
+{
+  "wordSet": "bsr",
+  "global": {
+    "backgroundColor": "#ffffff",
+    "word": "bsr",
+    "fillColor": "#ffffff",
+    "strokeColor": "#000000",
+    "fontSize": 1000,
+    "strength": 1
+  },
+  "audio": {
+    "audioReactive": false,
+    "styleIntensity": 1.5,
+    "depthIntensity": 309.7826086956522,
+    "minStyle": 1
+  },
+  "letters": [
+    {
+      "rotX": -0.40977295481606024,
+      "rotY": 0.1365909849386866,
+      "rotZ": 0,
+      "distance": 146.73913043478262,
+      "slices": 4,
+      "offset": 0,
+      "audioDepth": 76.7084475780128,
+      "styleAmount": 0.44819819819819817
+    },
+    {
+      "rotX": 0.2731819698773732,
+      "rotY": -0.27318196987737364,
+      "rotZ": -0.1365909849386866,
+      "distance": 103.26086956521739,
+      "slices": 4,
+      "offset": 3,
+      "audioDepth": 82.78869662501376,
+      "styleAmount": 0.49236000706588934
+    },
+    {
+      "rotX": -0.1,
+      "rotY": -0.27318196987737364,
+      "rotZ": 0.2731819698773732,
+      "distance": 152.17391304347828,
+      "slices": 4,
+      "offset": 3,
+      "audioDepth": 75.4923977686126,
+      "styleAmount": 0.43936583642466
+    }
+  ]
+}
