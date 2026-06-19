@@ -1,15 +1,24 @@
 .interactive-icon {
   position: relative;
+  width: var(--bsr-main-width);
+  height: 100%;
+  transform: translateX(0);
+  transition: transform var(--bsr-layout-transition);
+}
+
+.main-page--expanded .interactive-icon {
+  transform: translateX(calc((var(--bsr-main-width-expanded) - var(--bsr-main-width)) / 2));
+}
+
+.interactive-icon__stage {
   width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
-  background: #ffffff;
 }
 
 .interactive-icon__canvas {
   position: absolute;
   inset: 0;
+  overflow: hidden;
 }
 
 .interactive-icon canvas {

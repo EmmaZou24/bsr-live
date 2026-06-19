@@ -22,8 +22,13 @@
 }
 
 .main-page__content {
-  flex: 1;
-  min-width: 0;
+  width: var(--bsr-main-width);
+  flex: none;
   height: var(--bsr-screen-height);
-  transition: flex var(--bsr-layout-transition);
+  overflow: hidden;
+  transition: width var(--bsr-layout-transition);
+}
+
+.main-page--expanded .main-page__content {
+  width: var(--bsr-main-width-expanded);
 }

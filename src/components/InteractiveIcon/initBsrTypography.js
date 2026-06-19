@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { Pane } from 'tweakpane';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 import opentype from 'opentype.js';
 import fontUrl from '../../assets/interactive-icon/MNKYMauriceTRIAL-Bold.otf?url';
@@ -18,9 +17,6 @@ let wordMetrics;
 let wordSet = "bsr";
 
 let FONTSIZE = 1000;
-let folders = [];
-let selectedStack = null;
-let selectLabel;
 
 const ORTHO_SIZE = 2600;
 let strokeWidth = 7/500 * FONTSIZE * (1 + (.01-FONTSIZE/50000));
@@ -35,9 +31,6 @@ function getContainerSize() {
 let { width: containerWidth, height: containerHeight } = getContainerSize();
 let aspect = containerWidth / containerHeight || window.innerWidth / window.innerHeight;
 
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
 let audioCtx;
 let analyser;
 let dataArray;
@@ -51,8 +44,7 @@ const PARAMS = {
     fontSize: 1000,
     strength: 1,
   },
-  selectLabel: 'Press on a letter to control individual parameters',
-  letters: [] ,
+  letters: [],
   audio:{
     audioReactive: false,
     styleIntensity: 1.5,
@@ -62,7 +54,6 @@ const PARAMS = {
 
 };
 
-const pane = new Pane();
 let disposed = false;
 
 async function bootstrap() {
@@ -94,7 +85,7 @@ async function bootstrap() {
   if (disposed) return;
 
   try {
-    buildUI(wordSet);
+    initLetterParams(wordSet);
     wordMetrics = computeWordMetrics(wordSet);
     buildGeometries(wordSet);
     rebuildLetters(wordSet);
@@ -120,9 +111,12 @@ camera.position.set(0, 0, 4000);
 scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 
-renderer = new THREE.WebGLRenderer();
+renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(containerWidth, containerHeight);
+renderer.setSize(containerWidth, containerHeight, false);
+renderer.domElement.style.width = '100%';
+renderer.domElement.style.height = '100%';
+renderer.domElement.style.display = 'block';
 renderer.shadowMap.enabled = true;
 
 container.appendChild(renderer.domElement);
@@ -216,183 +210,22 @@ function initAudio(){
   dataArray = new Uint8Array(analyser.frequencyBinCount); // 512 values, 0-255
 }
 
-function buildUI(word){ 
- const descFolder = pane.addFolder({ title: 'description' });
-  const descEl = document.createElement('div');
-  const cssStuff = `
-    font-size: 11px;
-    font-weight: 500;
-    line-height: 1.2;
-    text-align: left;
-    color: var(--lbl-fg);
-    flex: 1;
-    -webkit-hyphens: auto;
-    hyphens: auto;
-    
-    padding-left: 4px;
-    padding-right: 16px;
-    padding-bottom: 4px;
-  `;
-  
-  descEl.style.cssText = cssStuff;
-  descEl.textContent = 'In progress custom tool created for the new Brown Student Radio visual identity.';
-  descEl.style.marginBottom = '4px';
-  const descEl2 = document.createElement('div');
-  descEl2.style.cssText = cssStuff;
-  
-  descEl2.textContent = 'Music sourced from the Brown Student Radio live audio stream.';
-
-  const content = descFolder.element.querySelector('.tp-fldv_c');
-  content.appendChild(descEl);
-  content.appendChild(descEl2);
-  const globalFolder = pane.addFolder({ title: 'global' });
-  
-  
-  
-
-  globalFolder.addBinding(PARAMS.global, 'word', {label: 'Word'});
-
-  globalFolder.addButton({ title: 'Update' }).on('click', () => {
-  wordSet = PARAMS.global.word;
-  scale = FONTSIZE / otFont.unitsPerEm;
-  wordMetrics = computeWordMetrics(wordSet);
-  buildGeometries(wordSet);
-  rebuildLetters(wordSet); 
-   
-});
-  
-  globalFolder.addBinding(PARAMS.global, 'fontSize', { min: 100, max: 2000, label: 'Font Size' })
-  .on('change', () => {
-    FONTSIZE = PARAMS.global.fontSize;
-    scale = FONTSIZE / otFont.unitsPerEm;
-    strokeWidth = 7/500 * FONTSIZE * (1 + (.01 - FONTSIZE/50000));
-    wordMetrics = computeWordMetrics(wordSet);
-    buildGeometries(wordSet);  
-    buildStacks(wordSet);       
-  });
-   globalFolder.addBinding(PARAMS.global, 'backgroundColor', { label: 'Background Color' })
-  .on('change', () => {
-    scene.background = new THREE.Color(PARAMS.global.backgroundColor);
-  });
-
-  globalFolder.addBinding(PARAMS.global, 'coreColor', { label: 'Core Color' })
-  .on('change', () => { updateColors(); });
-
-  globalFolder.addBinding(PARAMS.global, 'secondaryColor', { label: 'Secondary Color' })
-  .on('change', () => { updateColors(); });
-
-  globalFolder.addBinding(PARAMS.global, 'strength', { min: 0, max: 1.5, label: 'Strength' });
-
-  globalFolder.addButton({ title: 'Shuffle' }).on('click', () => {
-    shuffleValues();
-  });
- 
-  folders.push(globalFolder);
-  
-  selectLabel = pane.addFolder({title: 'Select a letter to edit', expanded: false});
-  word.split('').forEach((char, i) => {
-    const letterParams = { rotX: 0, rotY: 0, rotZ: 0, distance: 100, slices: 4, offset: 0 , audioDepth: 100, styleAmount: 1.0};
-    PARAMS.letters.push(letterParams);
-
-    const folder = pane.addFolder({ title: `Selected Letter: ${char}` });
-    folder.addBinding(letterParams, 'rotX', { min: -Math.PI, max: Math.PI });
-    folder.addBinding(letterParams, 'rotY', { min: -Math.PI, max: Math.PI });
-    folder.addBinding(letterParams, 'rotZ', { min: -Math.PI, max: Math.PI });
-    folder.addBinding(letterParams, 'distance', { min: 0, max: 500 });
-    folder.addBinding(letterParams, 'slices', { min: 1, max: 10, step: 1 });
-    folder.addBinding(letterParams, 'offset', {min: -3, max: 3, step:1});
-    folder.hidden = true;
-    folders.push(folder);
-    
-  })
-
-  const audioFolder = pane.addFolder({ title: 'audio' });
-  const playBtn = audioFolder.addButton({ title: 'Play Stream' });
-  playBtn.on('click', () => {
-    PARAMS.audio.audioReactive = !PARAMS.audio.audioReactive;
-    if (PARAMS.audio.audioReactive) {
-      audioElement.play();
-      playBtn.title = 'Pause Stream';
-    } else {
-      audioElement.pause();
-      playBtn.title = 'Play Stream';
-    }
-  playBtn.refresh();
-});
-  audioFolder.addBinding(PARAMS.audio, 'styleIntensity', { label: 'Style Intensity', min: 0, max: 2});
-  audioFolder.addBinding(PARAMS.audio, 'depthIntensity', { label: 'Depth', min: 0, max: 500});
-  audioFolder.addBinding(PARAMS.audio, 'minStyle', { label: 'Min Style', min: 0, max: 1});
-
-  const exportFolder = pane.addFolder({ title: 'Export' });
-  const dnldSVG = exportFolder.addButton({ title: 'Download SVG' });
-  dnldSVG.on('click', () => {
-    renderSVG();
-  });
-
-  const presetFolder = pane.addFolder({ title: 'Presets', expanded: false });
-  presetFolder.addButton({ title: 'Download Settings' }).on('click', () => savePreset());
-  presetFolder.addButton({ title: 'Upload Settings' }).on('click', () => loadPreset());
-
-  
-
+function initLetterParams(word) {
+  PARAMS.letters = word.split('').map(() => ({
+    rotX: 0,
+    rotY: 0,
+    rotZ: 0,
+    distance: 100,
+    slices: 4,
+    offset: 0,
+    audioDepth: 100,
+    styleAmount: 1.0,
+  }));
 }
 
-function rebuildLetters(word) { //clean up 
-  pane.children.forEach(child => child.dispose());
-  PARAMS.letters = [];
-  folders = [];
-  buildUI(word);        //populates PARAMS.letters
+function rebuildLetters(word) {
+  initLetterParams(word);
   buildStacks(word);
-}
-
-function updateUI(current) {
-  folders.forEach((folder, i) => {
-    if (i === 0) return;              
-      if ((i - 1) === current) {
-        folder.hidden = false; 
-      } else {
-        folder.hidden = true;  
-      }
-  });
-
-  if (current === -1) {
-    selectLabel.hidden = false;
-  } else {
-    selectLabel.hidden = true;
-
-  }
-}
-
-function shuffleValues(){
-
-  stacks.forEach((stack, i) => {
-    const p = PARAMS.letters[i];
-    p.rotX = (Math.random() * 2 - 1) * 0.82;
-    p.rotY = (Math.random() * 2 - 1) * 0.7;
-    p.rotZ = (Math.random() * 2 - 1) * 0.55;
-
-    p.offset = Math.random() * 2 - 1; 
-    p.distance = Math.random() * 200 + 100;
-    p.slices = Math.floor(Math.random() * 1) + 4; 
-
-    const dist = p.distance ?? PARAMS.global.distance;
-    if (stack.slices.length !== p.slices) {
-      stack.slices.forEach(slice => stack.group.remove(slice));
-      const newSlices = buildSlices(stack.char, p.slices);
-      newSlices.forEach((slice, j) => {
-        slice.traverse(obj => {
-          if (obj.isMesh) obj.userData.stackIndex = i;
-        });
-        slice.position.z = j * dist;
-        stack.group.add(slice);
-      });
-      stack.slices = newSlices;
-    }
-     
-    stack.slices.forEach((slice, j) => {
-      slice.position.z = (j * dist) - (Math.floor(stack.slices.length / 2* dist) + (p.offset * dist));
-    });
-  });
 }
 function buildStacks(word){ //creats each letter stack and adds to word group (includes all type/kerning calculations)
   
@@ -474,87 +307,6 @@ function buildGeometries(chars) {
   }
 }
 
-function renderSVG() {
-  const svgPaths = [];
-
-  
-  stacks.forEach(({char, group, slices}) => { //ite rates through stacks
-    const glyph = otFont.charToGlyph(char);
-    const scale = FONTSIZE / otFont.unitsPerEm;
-    
-    slices.forEach((slice, j) => { //iterates through slices
-      slice.updateWorldMatrix(true,false); //makes sure matrices are up to date
-
-      const bbox = glyph.getBoundingBox();
-      const cx = (bbox.x1 + bbox.x2) / 2 * scale;
-      const xHeight = otFont.tables.os2.sxHeight * scale;
-      const cy = -xHeight/2;
-
-      const worldMatrix = slice.matrixWorld;
-      
-      const commands = glyph.path.commands;
-      let d = '';
-
-      commands.forEach(cmd => { //goes through the curves and points of the glyph
-        if (cmd.type === 'M' || cmd.type === 'L') { // move to and line to
-          const p = new THREE.Vector3(
-            cmd.x * scale - cx,
-            -(cmd.y * scale) - cy,
-            0
-          );
-          p.applyMatrix4(worldMatrix);
-          const s = worldToSVG(p);
-          d += `${cmd.type} ${s.x.toFixed(2)} ${s.y.toFixed(2)} `;
-        } else if (cmd.type === 'C') { //cubic bezier 
-          const p1 = new THREE.Vector3(cmd.x1 * scale - cx, -(cmd.y1 * scale) - cy, 0).applyMatrix4(worldMatrix);;//creates new vector, scales to match world values, applies world values
-          const p2 = new THREE.Vector3(cmd.x2 * scale - cx, -(cmd.y2 * scale) - cy, 0).applyMatrix4(worldMatrix);;
-          const p3 = new THREE.Vector3(cmd.x * scale - cx, -(cmd.y * scale) - cy, 0).applyMatrix4(worldMatrix);;
-
-          const s1 = worldToSVG(p1);
-          const s2 = worldToSVG(p2);
-          const s3 = worldToSVG(p3);
-
-          d += `C ${s1.x.toFixed(2)} ${s1.y.toFixed(2)} ${s2.x.toFixed(2)} ${s2.y.toFixed(2)} ${s3.x.toFixed(2)} ${s3.y.toFixed(2)} `;
-        } else if (cmd.type === 'Q') { //quadratic bezier 
-          const p1 = new THREE.Vector3(cmd.x1 * scale - cx, -(cmd.y1 * scale) - cy, 0).applyMatrix4(worldMatrix);;
-          const p = new THREE.Vector3(cmd.x * scale - cx, -(cmd.y * scale) - cy, 0).applyMatrix4(worldMatrix);;
-          
-          const s1 = worldToSVG(p1);
-          const s = worldToSVG(p);
-          
-          d += `Q ${s1.x.toFixed(2)} ${s1.y.toFixed(2)} ${s.x.toFixed(2)} ${s.y.toFixed(2)} `;
-        } else if (cmd.type === 'Z') { //close path
-          d += 'Z ';
-        }
-      });
-
-      const isFront = (j === slices.length - 1);
-      const fillColor = isFront ? PARAMS.global.coreColor : PARAMS.global.secondaryColor;
-      svgPaths.push(`<path d="${d}" fill="${fillColor}"/>`);
-      
-    });
-  });
-
-  const svg = `<svg width="${window.innerWidth}" height="${window.innerHeight}" viewBox="0 0 ${window.innerWidth} ${window.innerHeight}" xmlns="http://www.w3.org/2000/svg">
-    ${svgPaths.join('\n')}
-  </svg>`;
-  
-  const blob = new Blob([svg], { type: 'image/svg+xml' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'export.svg';
-  a.click();
-}
-
-function worldToSVG(point3D) {
-  const v = point3D.clone().project(camera);
-  return {
-    x: (v.x * 0.5 + 0.5) * window.innerWidth,
-    y: (-v.y * 0.5 + 0.5) * window.innerHeight
-  };
-}
-
-
 function computeWordMetrics(word) {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -594,74 +346,11 @@ function updateColors() {
 }
 
 
-function onClick(e) {
-  if (pane.element.contains(e.target)) return;
-  const rect = container.getBoundingClientRect();
-  if (!rect.width || !rect.height) return;
-  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-  
-  raycaster.setFromCamera(mouse, camera);
-  
-  const meshes = [];
-  stacks.forEach((stack, i) => {
-    stack.group.traverse((obj) => {
-      if (obj.isMesh) {
-       
-        meshes.push(obj);
-        obj.userData.stackIndex = i;
-      }
-    });
-  });
-
-  const hits = raycaster.intersectObjects(meshes, false);
-  if (hits.length === 0){
-    updateUI(-1);
-  }else{
-     const i = hits[0].object.userData.stackIndex;
-     updateUI(i);
-  }
-}
-
-window.addEventListener('click', onClick);
-
 const onAudioPlay = () => {
   if (!audioCtx) initAudio();
   if (audioCtx.state === 'suspended') audioCtx.resume();
 };
 audioElement.addEventListener('play', onAudioPlay, { once: true });
-
-//PRESET STUFF
-
-function savePreset() {
-  const preset = {
-    wordSet,
-    global: { ...PARAMS.global },
-    audio: { ...PARAMS.audio },
-    letters: PARAMS.letters.map(l => ({ ...l })),
-  };
-  const blob = new Blob([JSON.stringify(preset, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `${wordSet}_preset.json`;
-  a.click();
-}
-
-function loadPreset() {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = '.json';
-  input.onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const preset = JSON.parse(ev.target.result);
-
-      applyPreset(preset);
-    };
-    reader.readAsText(e.target.files[0]);
-  };
-  input.click();
-}
 
 function applyPreset(preset) {
   wordSet = preset.wordSet;
@@ -680,22 +369,28 @@ function applyPreset(preset) {
     if (PARAMS.letters[i]) Object.assign(PARAMS.letters[i], l);
   });
 
-  pane.refresh();
   scene.background = new THREE.Color(PARAMS.global.backgroundColor);
+  updateColors();
 }
 
+let resizeRaf = 0;
+
 function onResize() {
-  const size = getContainerSize();
-  if (!size.width || !size.height) return;
-  containerWidth = size.width;
-  containerHeight = size.height;
-  aspect = containerWidth / containerHeight;
-  camera.left   = ORTHO_SIZE * aspect / -2;
-  camera.right  = ORTHO_SIZE * aspect / 2;
-  camera.top    = ORTHO_SIZE / 2;
-  camera.bottom = ORTHO_SIZE / -2;
-  camera.updateProjectionMatrix();
-  renderer.setSize(containerWidth, containerHeight);
+  if (resizeRaf) cancelAnimationFrame(resizeRaf);
+  resizeRaf = requestAnimationFrame(() => {
+    resizeRaf = 0;
+    const size = getContainerSize();
+    if (!size.width || !size.height) return;
+    containerWidth = size.width;
+    containerHeight = size.height;
+    aspect = containerWidth / containerHeight;
+    camera.left   = ORTHO_SIZE * aspect / -2;
+    camera.right  = ORTHO_SIZE * aspect / 2;
+    camera.top    = ORTHO_SIZE / 2;
+    camera.bottom = ORTHO_SIZE / -2;
+    camera.updateProjectionMatrix();
+    renderer.setSize(containerWidth, containerHeight, false);
+  });
 }
 
 const resizeObserver = new ResizeObserver(onResize);
@@ -704,11 +399,10 @@ onResize();
 
 return () => {
   disposed = true;
-  window.removeEventListener('click', onClick);
+  if (resizeRaf) cancelAnimationFrame(resizeRaf);
   resizeObserver.disconnect();
   audioElement.removeEventListener('play', onAudioPlay);
   renderer.setAnimationLoop(null);
-  pane.dispose();
   if (renderer.domElement.parentNode === container) {
     container.removeChild(renderer.domElement);
   }

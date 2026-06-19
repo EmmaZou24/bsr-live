@@ -12,13 +12,11 @@ export function InteractiveIcon() {
     const audioElement = audioRef.current
     if (!container || !audioElement) return
 
-    const cleanup = initBsrTypography({
+    return initBsrTypography({
       container,
       audioElement,
       onReady: () => setLoading(false),
     })
-
-    return cleanup
   }, [])
 
   return (
@@ -29,7 +27,9 @@ export function InteractiveIcon() {
         src="https://listen.bsrlive.com/bsrmp3"
         crossOrigin="anonymous"
       />
-      <div ref={containerRef} className="interactive-icon__canvas" />
+      <div className="interactive-icon__stage">
+        <div ref={containerRef} className="interactive-icon__canvas" />
+      </div>
     </div>
   )
 }
