@@ -1,0 +1,28 @@
+.scrolling-bar {
+  display: flex;
+  align-items: center;
+  height: 3.8vh;
+  min-height: 28px;
+  max-height: 36px;
+  padding: 0 var(--bsr-space-md);
+  overflow: hidden;
+}
+
+.scrolling-bar--dark {
+  background: var(--bsr-black);
+  color: var(--bsr-pink);
+}
+
+.scrolling-bar--light {
+  background: var(--bsr-black);
+  color: var(--bsr-white);
+}
+
+.scrolling-bar__text {
+  margin: 0;
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-text-sm);
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}

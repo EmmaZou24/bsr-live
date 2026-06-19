@@ -1,0 +1,32 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35em 0.7em;
+  border-radius: 999px;
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-text-2xs);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.tag--filled {
+  background: var(--bsr-black);
+  border: none;
+}
+
+.tag--filled.tag--pink {
+  color: var(--bsr-pink);
+}
+
+.tag--filled.tag--white {
+  color: var(--bsr-white);
+}
+
+.tag--outline {
+  background: var(--bsr-pink);
+  border: var(--bsr-border);
+  color: var(--bsr-black);
+}

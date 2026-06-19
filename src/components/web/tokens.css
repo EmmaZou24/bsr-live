@@ -1,0 +1,57 @@
+@font-face {
+  font-family: 'MNKYMaurice';
+  src: url('../../assets/interactive-icon/MNKYMauriceTRIAL-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+:root {
+  --bsr-pink: #ff0a4f;
+  --bsr-black: #000000;
+  --bsr-white: #ffffff;
+  --bsr-border: 2px solid var(--bsr-black);
+  --bsr-border-width: 2px;
+  --bsr-font: 'MNKYMaurice', system-ui, sans-serif;
+
+  /* Layout regions */
+  --bsr-side-collapsed: 5.32vw;
+  --bsr-side-expanded: 33.333vw;
+  --bsr-side-width: var(--bsr-side-expanded);
+  --bsr-main-width: calc(100vw - var(--bsr-side-collapsed));
+  --bsr-main-width-expanded: calc(100vw - var(--bsr-side-expanded));
+  --bsr-layout-transition: 0.35s ease;
+  --bsr-screen-height: 100svh;
+
+  /* Side panel proportions (Figma reference frame: 464px wide) */
+  --bsr-side-pad: calc(var(--bsr-side-expanded) * 18 / 464);
+  --bsr-side-row: calc(var(--bsr-side-expanded) * 54 / 464);
+  --bsr-side-font: calc(var(--bsr-side-expanded) * 18 / 464);
+  --bsr-side-font-sm: calc(var(--bsr-side-expanded) * 12 / 464);
+  --bsr-side-font-xs: calc(var(--bsr-side-expanded) * 9 / 464);
+  --bsr-side-font-md: calc(var(--bsr-side-expanded) * 16 / 464);
+  --bsr-side-font-lg: calc(var(--bsr-side-expanded) * 27 / 464);
+  --bsr-side-gap: calc(var(--bsr-side-expanded) * 9 / 464);
+  --bsr-side-gap-lg: calc(var(--bsr-side-expanded) * 28 / 464);
+  --bsr-side-ticker: calc(var(--bsr-side-expanded) * 32 / 464);
+  --bsr-nav-lift-x: calc(var(--bsr-side-expanded) * 4 / 464);
+  --bsr-nav-lift-y: calc(var(--bsr-side-expanded) * 5 / 464);
+
+  /* Fluid spacing (derived from original 464px side panel) */
+  --bsr-space-2xs: clamp(3px, 0.35vw, 4px);
+  --bsr-space-xs: clamp(4px, 0.5vw, 8px);
+  --bsr-space-sm: clamp(8px, 1vw, 9px);
+  --bsr-space-md: clamp(12px, 1.5vw, 18px);
+  --bsr-space-lg: clamp(20px, 2.5vw, 28px);
+
+  /* Card proportions from Figma (222 × 338) */
+  --bsr-card-width: calc(var(--bsr-main-width-expanded) * 0.178);
+  --bsr-card-aspect: 222 / 338;
+
+  /* Type scale */
+  --bsr-text-2xs: clamp(8px, 0.55vw, 9px);
+  --bsr-text-xs: clamp(10px, 0.75vw, 12px);
+  --bsr-text-sm: clamp(12px, 1vw, 16px);
+  --bsr-text-md: clamp(14px, 1.1vw, 18px);
+  --bsr-text-lg: clamp(20px, 2vw, 27px);
+  --bsr-text-xl: clamp(40px, 5vw, 96px);
+}

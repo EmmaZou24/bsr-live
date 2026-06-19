@@ -1,0 +1,126 @@
+.title-search {
+  display: flex;
+  flex-direction: column;
+  width: var(--bsr-main-width);
+  background: var(--bsr-white);
+  color: var(--bsr-black);
+}
+
+.title-search__hero {
+  display: flex;
+  flex-direction: column;
+  min-height: 26vh;
+}
+
+.title-search__title-row {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--bsr-space-md);
+  padding: var(--bsr-space-md);
+}
+
+.title-search__title {
+  margin: 0;
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-text-xl);
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: lowercase;
+}
+
+.title-search__illustration {
+  width: 25%;
+  min-width: 120px;
+  height: auto;
+}
+
+.title-search__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bsr-space-sm);
+  min-height: 4vh;
+  padding: 0 var(--bsr-space-sm);
+  border-top: var(--bsr-border);
+  border-bottom: var(--bsr-border);
+}
+
+.title-search__search {
+  display: flex;
+  align-items: center;
+  gap: var(--bsr-space-sm);
+  width: 15%;
+  min-width: 140px;
+}
+
+.title-search__search-icon {
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
+  font-size: var(--bsr-text-sm);
+}
+
+.title-search__search-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--bsr-black);
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-text-xs);
+  font-weight: 500;
+  line-height: 1.1;
+  outline: none;
+}
+
+.title-search__search-input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.title-search__filters {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--bsr-space-sm);
+}
+
+.title-search__filter {
+  padding: 0.35em 0.7em;
+  border: var(--bsr-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--bsr-black);
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-text-2xs);
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  cursor: pointer;
+}
+
+.title-search__filter--active {
+  background: var(--bsr-black);
+  color: var(--bsr-pink);
+}
+
+@media (max-width: 900px) {
+  .title-search {
+    width: 100%;
+  }
+
+  .title-search__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--bsr-space-sm);
+  }
+
+  .title-search__search {
+    width: 100%;
+  }
+
+  .title-search__filters {
+    justify-content: flex-start;
+  }
+}

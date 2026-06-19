@@ -9,11 +9,12 @@ body {
 }
 
 body {
-  background: #0c0c0c;
-  color: #e8e8e8;
+  background: #ffffff;
+  color: #000000;
   font-family: system-ui, sans-serif;
 }
 
 #app {
   min-height: 100svh;
+  width: 100%;
 }

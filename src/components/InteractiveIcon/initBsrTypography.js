@@ -24,7 +24,16 @@ let selectLabel;
 
 const ORTHO_SIZE = 2600;
 let strokeWidth = 7/500 * FONTSIZE * (1 + (.01-FONTSIZE/50000));
-const aspect = window.innerWidth / window.innerHeight;
+
+function getContainerSize() {
+  return {
+    width: container.clientWidth,
+    height: container.clientHeight,
+  };
+}
+
+let { width: containerWidth, height: containerHeight } = getContainerSize();
+let aspect = containerWidth / containerHeight || window.innerWidth / window.innerHeight;
 
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
@@ -113,7 +122,7 @@ scene.background = new THREE.Color(0xffffff);
 
 renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(containerWidth, containerHeight);
 renderer.shadowMap.enabled = true;
 
 container.appendChild(renderer.domElement);
@@ -587,8 +596,10 @@ function updateColors() {
 
 function onClick(e) {
   if (pane.element.contains(e.target)) return;
-  mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  const rect = container.getBoundingClientRect();
+  if (!rect.width || !rect.height) return;
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
   
   raycaster.setFromCamera(mouse, camera);
   
@@ -674,21 +685,27 @@ function applyPreset(preset) {
 }
 
 function onResize() {
-  const aspect = window.innerWidth / window.innerHeight;
+  const size = getContainerSize();
+  if (!size.width || !size.height) return;
+  containerWidth = size.width;
+  containerHeight = size.height;
+  aspect = containerWidth / containerHeight;
   camera.left   = ORTHO_SIZE * aspect / -2;
   camera.right  = ORTHO_SIZE * aspect / 2;
   camera.top    = ORTHO_SIZE / 2;
   camera.bottom = ORTHO_SIZE / -2;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(containerWidth, containerHeight);
 }
 
-window.addEventListener('resize', onResize);
+const resizeObserver = new ResizeObserver(onResize);
+resizeObserver.observe(container);
+onResize();
 
 return () => {
   disposed = true;
   window.removeEventListener('click', onClick);
-  window.removeEventListener('resize', onResize);
+  resizeObserver.disconnect();
   audioElement.removeEventListener('play', onAudioPlay);
   renderer.setAnimationLoop(null);
   pane.dispose();

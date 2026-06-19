@@ -1,0 +1,24 @@
+.nav-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: var(--bsr-space-lg);
+  overflow: auto;
+  background: var(--bsr-white);
+  box-sizing: border-box;
+}
+
+.nav-page__title {
+  margin: 0;
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-text-xl);
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: lowercase;
+}
+
+.nav-page--articles,
+.nav-page--shows {
+  gap: var(--bsr-space-lg);
+}

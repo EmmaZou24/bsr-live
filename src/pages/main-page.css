@@ -1,0 +1,29 @@
+.main-page {
+  display: flex;
+  width: 100vw;
+  height: var(--bsr-screen-height);
+  overflow: hidden;
+  background: var(--bsr-white);
+}
+
+.main-page__sidebar {
+  width: var(--bsr-side-collapsed);
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-right: var(--bsr-border);
+  transition: width var(--bsr-layout-transition);
+}
+
+.main-page--expanded .main-page__sidebar {
+  width: var(--bsr-side-expanded);
+  cursor: default;
+}
+
+.main-page__content {
+  flex: 1;
+  min-width: 0;
+  height: var(--bsr-screen-height);
+  transition: flex var(--bsr-layout-transition);
+}
