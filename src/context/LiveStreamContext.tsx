@@ -66,6 +66,22 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
     return () => window.clearInterval(intervalId)
   }, [refreshNowPlaying])
 
+  useEffect(() => {
+    const preloadStream = () => {
+      const audio = audioRef.current
+      if (!audio || !audio.paused) return
+      audio.load()
+    }
+
+    if (document.readyState === 'complete') {
+      preloadStream()
+      return
+    }
+
+    window.addEventListener('load', preloadStream, { once: true })
+    return () => window.removeEventListener('load', preloadStream)
+  }, [])
+
   const togglePlay = useCallback(async () => {
     const audio = audioRef.current
     if (!audio) return
