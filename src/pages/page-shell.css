@@ -1,0 +1,53 @@
+.page-shell {
+  position: relative;
+  display: flex;
+  width: 100vw;
+  height: var(--bsr-screen-height);
+  overflow: hidden;
+  background: var(--bsr-white);
+}
+
+.page-shell__sidebar {
+  width: var(--bsr-side-collapsed);
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-right: var(--bsr-border);
+  transition: width var(--bsr-layout-transition);
+}
+
+.page-shell--expanded .page-shell__sidebar {
+  width: var(--bsr-side-expanded);
+  cursor: default;
+}
+
+/* Home: sidebar pushes content */
+.page-shell--push .page-shell__content {
+  width: var(--bsr-main-width);
+  flex: none;
+  height: var(--bsr-screen-height);
+  overflow: hidden;
+  transition: width var(--bsr-layout-transition);
+}
+
+.page-shell--push.page-shell--expanded .page-shell__content {
+  width: var(--bsr-main-width-expanded);
+}
+
+/* Schedule / articles / shows: sidebar overlays content when expanded */
+.page-shell--overlay .page-shell__sidebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  height: var(--bsr-screen-height);
+}
+
+.page-shell--overlay .page-shell__content {
+  width: calc(100vw - var(--bsr-side-collapsed));
+  margin-left: var(--bsr-side-collapsed);
+  height: var(--bsr-screen-height);
+  overflow: hidden;
+  box-sizing: border-box;
+}

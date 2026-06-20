@@ -6,7 +6,7 @@
   transition: transform var(--bsr-layout-transition);
 }
 
-.main-page--expanded .interactive-icon {
+.page-shell--push.page-shell--expanded .interactive-icon {
   transform: translateX(calc((var(--bsr-main-width-expanded) - var(--bsr-main-width)) / 2));
 }
 
