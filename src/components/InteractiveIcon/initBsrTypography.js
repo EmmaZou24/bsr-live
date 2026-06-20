@@ -198,16 +198,28 @@ renderer.setAnimationLoop(() => {
 });
 
 function initAudio(){
-  audioCtx = new AudioContext();
-  analyser = audioCtx.createAnalyser();
-  analyser.fftSize = 1024;        // 512 usable bins
-  analyser.smoothingTimeConstant = 0.8; // 0 = snappy, 1 = sluggish
+  if (audioCtx) return;
 
-  const source = audioCtx.createMediaElementSource(audioElement);
-  source.connect(analyser);
-  analyser.connect(audioCtx.destination); // still hear the audio
+  try {
+    audioCtx = new AudioContext();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 1024;        // 512 usable bins
+    analyser.smoothingTimeConstant = 0.8; // 0 = snappy, 1 = sluggish
 
-  dataArray = new Uint8Array(analyser.frequencyBinCount); // 512 values, 0-255
+    const source = audioCtx.createMediaElementSource(audioElement);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination); // still hear the audio
+
+    dataArray = new Uint8Array(analyser.frequencyBinCount); // 512 values, 0-255
+  } catch (error) {
+    console.error('Failed to initialize Web Audio for interactive icon', error);
+    if (audioCtx) {
+      audioCtx.close();
+      audioCtx = null;
+    }
+    analyser = null;
+    dataArray = null;
+  }
 }
 
 function initLetterParams(word) {
@@ -346,11 +358,22 @@ function updateColors() {
 }
 
 
-const onAudioPlay = () => {
-  if (!audioCtx) initAudio();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-};
-audioElement.addEventListener('play', onAudioPlay, { once: true });
+let onAudioPlay = null;
+
+function syncAudioIntegration() {
+  if (onAudioPlay) {
+    audioElement.removeEventListener('play', onAudioPlay);
+    onAudioPlay = null;
+  }
+
+  if (!PARAMS.audio.audioReactive) return;
+
+  onAudioPlay = () => {
+    if (!audioCtx) initAudio();
+    if (audioCtx?.state === 'suspended') void audioCtx.resume();
+  };
+  audioElement.addEventListener('play', onAudioPlay, { once: true });
+}
 
 function applyPreset(preset) {
   wordSet = preset.wordSet;
@@ -371,6 +394,7 @@ function applyPreset(preset) {
 
   scene.background = new THREE.Color(PARAMS.global.backgroundColor);
   updateColors();
+  syncAudioIntegration();
 }
 
 let resizeRaf = 0;
@@ -401,7 +425,7 @@ return () => {
   disposed = true;
   if (resizeRaf) cancelAnimationFrame(resizeRaf);
   resizeObserver.disconnect();
-  audioElement.removeEventListener('play', onAudioPlay);
+  if (onAudioPlay) audioElement.removeEventListener('play', onAudioPlay);
   renderer.setAnimationLoop(null);
   if (renderer.domElement.parentNode === container) {
     container.removeChild(renderer.domElement);

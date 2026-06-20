@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
+import { useLiveStream } from '../../context/LiveStreamContext'
 import { initBsrTypography } from './initBsrTypography.js'
 import './interactive-icon.css'
 
 export function InteractiveIcon() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const audioRef = useRef<HTMLAudioElement>(null)
+  const { audioRef } = useLiveStream()
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -17,16 +18,11 @@ export function InteractiveIcon() {
       audioElement,
       onReady: () => setLoading(false),
     })
-  }, [])
+  }, [audioRef])
 
   return (
     <div className="interactive-icon">
       {loading && <div className="interactive-icon__loading">Loading...</div>}
-      <audio
-        ref={audioRef}
-        src="https://listen.bsrlive.com/bsrmp3"
-        crossOrigin="anonymous"
-      />
       <div className="interactive-icon__stage">
         <div ref={containerRef} className="interactive-icon__canvas" />
       </div>

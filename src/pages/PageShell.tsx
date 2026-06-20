@@ -1,6 +1,7 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { SidePanel } from '../components/web'
+import { useLiveStream } from '../context/LiveStreamContext'
 import { navIdToPath } from './routes'
 import './page-shell.css'
 
@@ -12,6 +13,7 @@ type PageShellProps = {
 export function PageShell({ mode, children }: PageShellProps) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  const { nowPlaying, isPlaying, isStreamLoading, isLoadingNowPlaying, togglePlay } = useLiveStream()
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
 
   const handleSidebarClick = () => {
@@ -59,6 +61,14 @@ export function PageShell({ mode, children }: PageShellProps) {
       >
         <SidePanel
           expanded={sidebarExpanded}
+          showTitle={nowPlaying.title}
+          showAuthor={nowPlaying.subtitle}
+          isPlaying={isPlaying}
+          isStreamLoading={isStreamLoading}
+          isLoadingNowPlaying={isLoadingNowPlaying}
+          onPlayClick={() => {
+            void togglePlay()
+          }}
           onMenuClick={handleMenuClick}
           onNavClick={handleNavClick}
         />

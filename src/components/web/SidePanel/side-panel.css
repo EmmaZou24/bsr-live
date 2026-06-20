@@ -21,7 +21,6 @@
   display: flex;
   height: var(--bsr-side-row);
   flex-shrink: 0;
-  border: var(--bsr-border);
   box-sizing: border-box;
 }
 
@@ -32,24 +31,62 @@
   justify-content: center;
   width: var(--bsr-side-row);
   height: 100%;
-  padding: 0;
+  padding: calc(var(--bsr-side-expanded) * 10 / 464);
   background: transparent;
-  border: none;
-  border-right: var(--bsr-border);
+  border: var(--bsr-border);
   color: var(--bsr-black);
   cursor: pointer;
   box-sizing: border-box;
   flex-shrink: 0;
 }
 
-.side-panel__play-icon {
+.side-panel__play:disabled {
+  cursor: pointer;
+}
+
+.side-panel__play-throbber {
+  display: block;
   width: calc(var(--bsr-side-expanded) * 24 / 464);
   height: calc(var(--bsr-side-expanded) * 24 / 464);
+  border: calc(var(--bsr-side-expanded) * 3 / 464) solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: side-panel-play-throbber 0.75s linear infinite;
+}
+
+@keyframes side-panel-play-throbber {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.side-panel__transport-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--bsr-side-expanded) * 31 / 464);
+  height: calc(var(--bsr-side-expanded) * 24 / 464);
+  flex-shrink: 0;
+}
+
+.side-panel__play-icon,
+.side-panel__pause-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.side-panel__play-icon {
   transform: rotate(90deg);
 }
 
 .side-panel__menu {
-  border-right: none;
+  border: none;
+  border-top: var(--bsr-border);
+  border-bottom: var(--bsr-border);
+  border-right: var(--bsr-border);
+  margin-left: calc(-1 * var(--bsr-border-width));
+  padding: calc(var(--bsr-side-expanded) * 16 / 464) calc(var(--bsr-side-expanded) * 12 / 464);
 }
 
 .side-panel__menu-icon {
@@ -71,7 +108,10 @@
   min-width: 0;
   padding: calc(var(--bsr-side-expanded) * 9 / 464);
   border: none;
+  border-top: var(--bsr-border);
+  border-bottom: var(--bsr-border);
   border-right: var(--bsr-border);
+  margin-left: calc(-1 * var(--bsr-border-width));
   box-sizing: border-box;
 }
 

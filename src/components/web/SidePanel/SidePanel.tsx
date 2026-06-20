@@ -18,6 +18,9 @@ export type SidePanelProps = {
   expanded?: boolean
   showTitle?: string
   showAuthor?: string
+  isPlaying?: boolean
+  isStreamLoading?: boolean
+  isLoadingNowPlaying?: boolean
   activeTab?: SidePanelTab
   aboutText?: string
   tickerText?: string
@@ -46,9 +49,30 @@ const defaultTickerText =
 
 function PlayIcon() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="side-panel__play-icon">
-      <polygon points="8,5 20,12 8,19" fill="currentColor" />
-    </svg>
+    <span className="side-panel__transport-icon-wrap" aria-hidden="true">
+      <svg viewBox="0 0 29.3308 23.1568" className="side-panel__play-icon" fill="none">
+        <path d="M13.8253 0.457475C14.2193 -0.152491 15.1115 -0.152492 15.5054 0.457474L29.1692 21.6142C29.5989 22.2796 29.1212 23.1568 28.3291 23.1568H1.00164C0.209528 23.1568 -0.26814 22.2796 0.161602 21.6142L13.8253 0.457475Z" fill="currentColor" />
+      </svg>
+    </span>
+  )
+}
+
+function PauseIcon() {
+  return (
+    <span className="side-panel__transport-icon-wrap" aria-hidden="true">
+      <svg viewBox="0 0 31 24" className="side-panel__pause-icon" fill="none">
+        <rect x="7.5" y="3" width="5" height="18" fill="currentColor" />
+        <rect x="18.5" y="3" width="5" height="18" fill="currentColor" />
+      </svg>
+    </span>
+  )
+}
+
+function PlayThrobber() {
+  return (
+    <span className="side-panel__transport-icon-wrap" aria-hidden="true">
+      <span className="side-panel__play-throbber" />
+    </span>
   )
 }
 
@@ -133,8 +157,11 @@ function UnavailableNavItem({ label }: { label: string }) {
 
 export function SidePanel({
   expanded = false,
-  showTitle = 'Hauntology of the Phlegm',
-  showAuthor = 'by seigbhlem',
+  showTitle = 'Brown Student Radio',
+  showAuthor = 'Live on BSR',
+  isPlaying = false,
+  isStreamLoading = false,
+  isLoadingNowPlaying = false,
   activeTab: controlledTab,
   aboutText = defaultAboutText,
   tickerText = defaultTickerText,
@@ -165,15 +192,27 @@ export function SidePanel({
         <button
           type="button"
           className="side-panel__play"
-          aria-label="Play stream"
-          onClick={onPlayClick}
+          aria-label={
+            isStreamLoading ? 'Loading stream' : isPlaying ? 'Pause stream' : 'Play stream'
+          }
+          aria-pressed={isPlaying}
+          aria-busy={isStreamLoading}
+          disabled={isStreamLoading}
+          onClick={(event) => {
+            event.stopPropagation()
+            onPlayClick?.()
+          }}
         >
-          <PlayIcon />
+          {isStreamLoading ? <PlayThrobber /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
 
         <div className="side-panel__show-info">
-          <p className="side-panel__show-title">{showTitle}</p>
-          <p className="side-panel__show-author">{showAuthor}</p>
+          <p className="side-panel__show-title">
+            {isLoadingNowPlaying ? 'Loading…' : showTitle}
+          </p>
+          <p className="side-panel__show-author">
+            {isLoadingNowPlaying ? '' : showAuthor}
+          </p>
         </div>
 
         <button
