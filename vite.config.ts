@@ -21,6 +21,11 @@ export default defineConfig(({ mode }) => {
             })
           },
         },
+        '/api/stream': {
+          target: 'https://listen.bsrlive.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/stream/, '/bsrmp3'),
+        },
       },
     },
   }

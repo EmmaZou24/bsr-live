@@ -1,5 +1,5 @@
-import { InteractiveIcon } from '../components/InteractiveIcon'
+import { AudioreactiveIcon } from '../components/AudioreactiveIcon'
 
 export function HomePage() {
-  return <InteractiveIcon />
+  return <AudioreactiveIcon />
 }

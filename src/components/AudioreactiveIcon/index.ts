@@ -1,0 +1,1 @@
+export { AudioreactiveIcon } from './AudioreactiveIcon'

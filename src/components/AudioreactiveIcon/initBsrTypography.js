@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 import opentype from 'opentype.js';
-import fontUrl from '../../assets/interactive-icon/MNKYMauriceTRIAL-Bold.otf?url';
-import defaultPreset from '../../assets/interactive-icon/bsr_preset.json';
+import fontUrl from '../../assets/audioreactive-icon/MNKYMauriceTRIAL-Bold.otf?url';
+import defaultPreset from '../../assets/audioreactive-icon/bsr_preset.json';
 
 export function initBsrTypography({ container, audioElement, onReady }) {
 let camera;    
@@ -124,43 +124,39 @@ container.appendChild(renderer.domElement);
 
 renderer.setAnimationLoop(() => {
   if (wordGroup && stacks) {
-  // global styleAmount — used when audio is off
   let styleAmount = PARAMS.global.strength;
+  let useReactiveAudio = false;
 
-  if (PARAMS.audio.audioReactive && analyser) {
+  if (PARAMS.audio.audioReactive && analyser && dataArray) {
     analyser.getByteFrequencyData(dataArray);
 
     const level = dataArray.reduce((a, b) => a + b, 0) / dataArray.length / 255;
-    styleAmount = level * PARAMS.audio.styleIntensity * 1.5;
+    useReactiveAudio = level > 0.02;
 
-    // per-letter styleAmount driven by each letter's frequency band
-    stacks.forEach((stack, i) => {
-      const freqIndex = Math.floor((i / stacks.length) * (dataArray.length / 4));
-      const freqEnergy = dataArray[freqIndex] / 255;
-      const letterTriggered = Math.max(0, freqEnergy - (1-PARAMS.audio.minStyle + .001)) / (1 - (1-PARAMS.audio.minStyle + .001));
-      PARAMS.letters[i].audioDepth = 15 + letterTriggered * PARAMS.audio.depthIntensity;
-      PARAMS.letters[i].styleAmount = letterTriggered * PARAMS.audio.styleIntensity *1.5 ;
-    });
+    if (useReactiveAudio) {
+      styleAmount = level * PARAMS.audio.styleIntensity * 1.5;
+
+      stacks.forEach((stack, i) => {
+        const freqIndex = Math.floor((i / stacks.length) * (dataArray.length / 4));
+        const freqEnergy = dataArray[freqIndex] / 255;
+        const letterTriggered = Math.max(0, freqEnergy - (1-PARAMS.audio.minStyle + .001)) / (1 - (1-PARAMS.audio.minStyle + .001));
+        PARAMS.letters[i].audioDepth = 15 + letterTriggered * PARAMS.audio.depthIntensity;
+        PARAMS.letters[i].styleAmount = letterTriggered * PARAMS.audio.styleIntensity *1.5 ;
+      });
+    }
   }
 
   stacks.forEach((stack, i) => {
     const p = PARAMS.letters[i];
     if (!p) return;
 
-    // s = the final per-letter style scale
-    // uses per-letter audio value if audio is on, global styleAmount otherwise
-    // multiplied by strength as a master scale on top
-    const s = ((PARAMS.audio.audioReactive && analyser)
-      ? p.styleAmount
-      : styleAmount) * PARAMS.global.strength;
+    const s = (useReactiveAudio ? p.styleAmount : styleAmount) * PARAMS.global.strength;
 
-    // rotation scaled by s
     stack.group.rotation.x = p.rotX * s;
     stack.group.rotation.y = p.rotY * s;
     stack.group.rotation.z = p.rotZ * s;
 
-    // depth — audio driven per letter or static fallback
-    const depth = (PARAMS.audio.audioReactive && analyser && p.audioDepth)
+    const depth = (useReactiveAudio && p.audioDepth)
       ? p.audioDepth
       : p.distance;
 
@@ -208,11 +204,11 @@ function initAudio(){
 
     const source = audioCtx.createMediaElementSource(audioElement);
     source.connect(analyser);
-    analyser.connect(audioCtx.destination); // still hear the audio
+    // Analysis only — playback stays on the shared stream element in LiveStreamContext.
 
     dataArray = new Uint8Array(analyser.frequencyBinCount); // 512 values, 0-255
   } catch (error) {
-    console.error('Failed to initialize Web Audio for interactive icon', error);
+    console.error('Failed to initialize Web Audio for audioreactive icon', error);
     if (audioCtx) {
       audioCtx.close();
       audioCtx = null;
@@ -360,6 +356,17 @@ function updateColors() {
 
 let onAudioPlay = null;
 
+function connectAudio() {
+  if (!PARAMS.audio.audioReactive) return;
+
+  if (!audioCtx) initAudio();
+  if (audioCtx?.state === 'suspended') void audioCtx.resume();
+}
+
+function disconnectAudio() {
+  if (audioCtx?.state === 'running') void audioCtx.suspend();
+}
+
 function syncAudioIntegration() {
   if (onAudioPlay) {
     audioElement.removeEventListener('play', onAudioPlay);
@@ -368,11 +375,10 @@ function syncAudioIntegration() {
 
   if (!PARAMS.audio.audioReactive) return;
 
-  onAudioPlay = () => {
-    if (!audioCtx) initAudio();
-    if (audioCtx?.state === 'suspended') void audioCtx.resume();
-  };
-  audioElement.addEventListener('play', onAudioPlay, { once: true });
+  onAudioPlay = () => connectAudio();
+  audioElement.addEventListener('play', onAudioPlay);
+
+  if (!audioElement.paused) connectAudio();
 }
 
 function applyPreset(preset) {
@@ -421,16 +427,20 @@ const resizeObserver = new ResizeObserver(onResize);
 resizeObserver.observe(container);
 onResize();
 
-return () => {
-  disposed = true;
-  if (resizeRaf) cancelAnimationFrame(resizeRaf);
-  resizeObserver.disconnect();
-  if (onAudioPlay) audioElement.removeEventListener('play', onAudioPlay);
-  renderer.setAnimationLoop(null);
-  if (renderer.domElement.parentNode === container) {
-    container.removeChild(renderer.domElement);
-  }
-  renderer.dispose();
-  if (audioCtx) audioCtx.close();
+return {
+  dispose() {
+    disposed = true;
+    if (resizeRaf) cancelAnimationFrame(resizeRaf);
+    resizeObserver.disconnect();
+    if (onAudioPlay) audioElement.removeEventListener('play', onAudioPlay);
+    renderer.setAnimationLoop(null);
+    if (renderer.domElement.parentNode === container) {
+      container.removeChild(renderer.domElement);
+    }
+    renderer.dispose();
+    if (audioCtx) audioCtx.close();
+  },
+  connectAudio,
+  disconnectAudio,
 };
 }

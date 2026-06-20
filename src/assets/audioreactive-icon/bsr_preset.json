@@ -9,10 +9,10 @@
     "strength": 1
   },
   "audio": {
-    "audioReactive": false,
+    "audioReactive": true,
     "styleIntensity": 1.5,
     "depthIntensity": 309.7826086956522,
-    "minStyle": 1
+    "minStyle": 0.2
   },
   "letters": [
     {
