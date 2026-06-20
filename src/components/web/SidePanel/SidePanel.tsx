@@ -1,4 +1,5 @@
 import { useRef, useState, type MouseEvent } from 'react'
+import { DEFAULT_TICKER_TEXT } from '../../../lib/spinitron/ticker'
 import dogIllustration from '../../../assets/web/side-panel-dog.png'
 import { ScrollingBar } from '../shared/ScrollingBar'
 import './side-panel.css'
@@ -44,8 +45,7 @@ const defaultNavItems: SidePanelNavItem[] = [
 const defaultAboutText =
   'Welcome to Brown Student and Community Radio, radio for the curious listener. Our programming is 100% freeform, led by Brown students and Providence community members.'
 
-const defaultTickerText =
-  'brown student & community radio ⬤ on air: hauntology of the bhlem  ⬤  up next: kosher music ⬤ '
+const defaultTickerText = DEFAULT_TICKER_TEXT
 
 function PlayIcon() {
   return (

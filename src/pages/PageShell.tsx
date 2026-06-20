@@ -13,7 +13,8 @@ type PageShellProps = {
 export function PageShell({ mode, children }: PageShellProps) {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const { nowPlaying, isPlaying, isStreamLoading, isLoadingNowPlaying, togglePlay } = useLiveStream()
+  const { nowPlaying, tickerText, isPlaying, isStreamLoading, isLoadingNowPlaying, togglePlay } =
+    useLiveStream()
   const [sidebarExpanded, setSidebarExpanded] = useState(false)
 
   const handleSidebarClick = () => {
@@ -66,6 +67,7 @@ export function PageShell({ mode, children }: PageShellProps) {
           isPlaying={isPlaying}
           isStreamLoading={isStreamLoading}
           isLoadingNowPlaying={isLoadingNowPlaying}
+          tickerText={tickerText}
           onPlayClick={() => {
             void togglePlay()
           }}

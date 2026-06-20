@@ -1,3 +1,5 @@
+import type { TickerData } from './ticker'
+
 export type SpinitronLink = {
   href: string
 }
@@ -48,4 +50,9 @@ export type NowPlaying = {
   artist?: string
   showTitle?: string
   host?: string
+}
+
+export type SpinitronLiveData = {
+  nowPlaying: NowPlaying
+  ticker: TickerData
 }

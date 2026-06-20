@@ -1,6 +1,8 @@
+import { DEFAULT_TICKER_DATA, type TickerData } from './ticker'
 import type {
   NowPlaying,
   SpinitronListResponse,
+  SpinitronLiveData,
   SpinitronPersona,
   SpinitronShow,
   SpinitronSpin,
@@ -55,19 +57,41 @@ async function fetchPersonaName(show: SpinitronShow): Promise<string | undefined
   return persona?.name
 }
 
-export async function fetchNowPlaying(): Promise<NowPlaying> {
-  const [spinsResponse, showsResponse] = await Promise.all([
-    spinitronFetch<SpinitronListResponse<SpinitronSpin>>('/spins?count=1'),
-    spinitronFetch<SpinitronListResponse<SpinitronShow>>('/shows?count=1'),
-  ])
+function formatSongLabel(spin?: SpinitronSpin): string {
+  if (!spin?.song) return '—'
 
-  const spin = spinsResponse?.items?.[0]
-  const show = showsResponse?.items?.[0]
-  const host = show ? await fetchPersonaName(show) : undefined
+  const song = spin.song.trim()
+  const artist = spin.artist?.trim()
 
-  const currentSpin = spin && isActiveNow(spin) ? spin : undefined
-  const currentShow = show && isActiveNow(show) ? show : undefined
+  if (artist) return `${song} — ${artist}`
+  return song
+}
 
+function findCurrentSpin(spins: SpinitronSpin[]): SpinitronSpin | undefined {
+  return spins.find((spin) => isActiveNow(spin)) ?? spins[0]
+}
+
+function findUpNextSpin(spins: SpinitronSpin[]): SpinitronSpin | undefined {
+  const now = Date.now()
+  return spins.find((spin) => {
+    const start = new Date(spin.start).getTime()
+    return !Number.isNaN(start) && start > now
+  })
+}
+
+function findUpcomingShow(shows: SpinitronShow[]): SpinitronShow | undefined {
+  const now = Date.now()
+  return shows.find((show) => {
+    const start = new Date(show.start).getTime()
+    return !Number.isNaN(start) && start > now
+  })
+}
+
+function buildNowPlaying(
+  currentSpin: SpinitronSpin | undefined,
+  currentShow: SpinitronShow | undefined,
+  host: string | undefined,
+): NowPlaying {
   if (currentSpin) {
     return {
       title: currentSpin.song,
@@ -91,5 +115,57 @@ export async function fetchNowPlaying(): Promise<NowPlaying> {
   return {
     title: 'Brown Student Radio',
     subtitle: 'Live on BSR',
+  }
+}
+
+function buildTickerData(
+  currentSpin: SpinitronSpin | undefined,
+  upNextSpin: SpinitronSpin | undefined,
+  upcomingShow: SpinitronShow | undefined,
+): TickerData {
+  const onAir = formatSongLabel(currentSpin)
+
+  let upNext = formatSongLabel(upNextSpin)
+  if (upNext === '—' && upcomingShow?.title) {
+    upNext = upcomingShow.title
+  }
+
+  return { onAir, upNext }
+}
+
+export async function fetchLiveBroadcast(): Promise<SpinitronLiveData> {
+  const [spinsResponse, showsResponse] = await Promise.all([
+    spinitronFetch<SpinitronListResponse<SpinitronSpin>>('/spins?count=25'),
+    spinitronFetch<SpinitronListResponse<SpinitronShow>>('/shows?count=5'),
+  ])
+
+  const spins = spinsResponse?.items ?? []
+  const shows = showsResponse?.items ?? []
+
+  const currentSpin = findCurrentSpin(spins)
+  const currentShow = shows.find((show) => isActiveNow(show))
+  const host = currentShow ? await fetchPersonaName(currentShow) : undefined
+
+  const upNextSpin = findUpNextSpin(spins)
+  const upcomingShow = findUpcomingShow(shows)
+
+  return {
+    nowPlaying: buildNowPlaying(currentSpin, currentShow, host),
+    ticker: buildTickerData(currentSpin, upNextSpin, upcomingShow),
+  }
+}
+
+export async function fetchNowPlaying(): Promise<NowPlaying> {
+  const live = await fetchLiveBroadcast()
+  return live.nowPlaying
+}
+
+export function getDefaultLiveBroadcast(): SpinitronLiveData {
+  return {
+    nowPlaying: {
+      title: 'Brown Student Radio',
+      subtitle: 'Live on BSR',
+    },
+    ticker: DEFAULT_TICKER_DATA,
   }
 }

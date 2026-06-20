@@ -9,19 +9,24 @@ import {
   type RefObject,
 } from 'react'
 import { BSR_STREAM_URL } from '../config/stream'
-import { fetchNowPlaying, isSpinitronConfigured } from '../lib/spinitron/client'
+import {
+  fetchLiveBroadcast,
+  getDefaultLiveBroadcast,
+  isSpinitronConfigured,
+} from '../lib/spinitron/client'
+import { DEFAULT_TICKER_TEXT, formatTickerText } from '../lib/spinitron/ticker'
 import type { NowPlaying } from '../lib/spinitron/types'
 
 const NOW_PLAYING_POLL_MS = 30_000
 
-const defaultNowPlaying: NowPlaying = {
-  title: 'Brown Student Radio',
-  subtitle: 'Live on BSR',
-}
+const defaultLive = getDefaultLiveBroadcast()
+
+const defaultNowPlaying: NowPlaying = defaultLive.nowPlaying
 
 type LiveStreamContextValue = {
   audioRef: RefObject<HTMLAudioElement | null>
   nowPlaying: NowPlaying
+  tickerText: string
   isPlaying: boolean
   isStreamLoading: boolean
   isLoadingNowPlaying: boolean
@@ -34,6 +39,7 @@ const LiveStreamContext = createContext<LiveStreamContextValue | null>(null)
 export function LiveStreamProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const [nowPlaying, setNowPlaying] = useState<NowPlaying>(defaultNowPlaying)
+  const [tickerText, setTickerText] = useState(DEFAULT_TICKER_TEXT)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isStreamLoading, setIsStreamLoading] = useState(false)
   const [isLoadingNowPlaying, setIsLoadingNowPlaying] = useState(isSpinitronConfigured())
@@ -45,10 +51,11 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const next = await fetchNowPlaying()
-      setNowPlaying(next)
+      const live = await fetchLiveBroadcast()
+      setNowPlaying(live.nowPlaying)
+      setTickerText(formatTickerText(live.ticker))
     } catch (error) {
-      console.error('Failed to load now playing from Spinitron', error)
+      console.error('Failed to load live broadcast data from Spinitron', error)
     } finally {
       setIsLoadingNowPlaying(false)
     }
@@ -111,6 +118,7 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
       value={{
         audioRef,
         nowPlaying,
+        tickerText,
         isPlaying,
         isStreamLoading,
         isLoadingNowPlaying,
