@@ -4,10 +4,10 @@
 
 ### Overall
 - Accessibility
+- Get font files
 
 ### Main Page
 - Setup navigation from subpages to main page
-- Overflow scrolling of song info on top of sidebar
 - Chat
 
 ### Schedule

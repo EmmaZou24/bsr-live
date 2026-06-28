@@ -19,7 +19,7 @@
 
 .side-panel__header {
   display: flex;
-  height: var(--bsr-side-row);
+  height: var(--bsr-side-header-row);
   flex-shrink: 0;
   box-sizing: border-box;
 }
@@ -101,12 +101,12 @@
 
 .side-panel__show-info {
   position: relative;
-  display: grid;
+  display: flex;
   flex: 1;
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   min-width: 0;
-  padding: calc(var(--bsr-side-expanded) * 6 / 464) calc(var(--bsr-side-expanded) * 9 / 464);
+  padding: calc(var(--bsr-side-expanded) * 9 / 464);
   border: none;
   border-top: var(--bsr-border);
   border-bottom: var(--bsr-border);
@@ -120,7 +120,7 @@
 .side-panel__show-author {
   margin: 0;
   font-family: var(--bsr-font);
-  line-height: 1.15;
+  line-height: 1.1;
 }
 
 .side-panel__show-title {

@@ -209,7 +209,9 @@ export function SidePanel({
 
         <div className="side-panel__show-info">
           {isLoadingNowPlaying ? (
-            <p className="side-panel__show-title">Loading…</p>
+            <div className="scrolling-show-lines__line scrolling-show-lines__line--title">
+              <p className="side-panel__show-title">Loading…</p>
+            </div>
           ) : (
             <>
             <ScrollingShowLines

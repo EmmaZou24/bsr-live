@@ -25,6 +25,7 @@
   /* Side panel proportions (Figma reference frame: 464px wide) */
   --bsr-side-pad: calc(var(--bsr-side-expanded) * 18 / 464);
   --bsr-side-row: calc(var(--bsr-side-expanded) * 54 / 464);
+  --bsr-side-header-row: calc(var(--bsr-side-expanded) * 58 / 464);
   --bsr-side-font: calc(var(--bsr-side-expanded) * 18 / 464);
   --bsr-side-font-sm: calc(var(--bsr-side-expanded) * 12 / 464);
   --bsr-side-font-xs: calc(var(--bsr-side-expanded) * 9 / 464);

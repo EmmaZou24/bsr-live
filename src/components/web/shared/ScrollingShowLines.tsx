@@ -72,17 +72,19 @@ function MarqueeLine({
   text,
   config,
   className,
+  lineClassName,
   lineRef,
 }: {
   text: string
   config: LineScrollConfig
   className: string
+  lineClassName: string
   lineRef?: React.RefObject<HTMLDivElement | null>
 }) {
   const trackStyle = { '--scroll-duration': `${config.duration}s` } as CSSProperties
 
   return (
-    <div ref={lineRef} className="scrolling-show-lines__line">
+    <div ref={lineRef} className={lineClassName}>
       <div className="scrolling-show-lines__track" style={trackStyle}>
         <MarqueeSegment
           text={text}
@@ -108,14 +110,16 @@ function MarqueeLine({
 function StaticLine({
   text,
   className,
+  lineClassName,
   lineRef,
 }: {
   text: string
   className: string
+  lineClassName: string
   lineRef?: React.RefObject<HTMLDivElement | null>
 }): ReactNode {
   return (
-    <div ref={lineRef} className="scrolling-show-lines__line">
+    <div ref={lineRef} className={lineClassName}>
       <p className={className}>{text}</p>
     </div>
   )
@@ -187,13 +191,23 @@ export function ScrollingShowLines({
     text: string,
     config: LineScrollConfig,
     className: string,
+    lineClassName: string,
     ref?: React.RefObject<HTMLDivElement | null>,
   ) =>
     config.shouldScroll ? (
-      <MarqueeLine text={text} config={config} className={className} lineRef={ref} />
+      <MarqueeLine
+        text={text}
+        config={config}
+        className={className}
+        lineClassName={lineClassName}
+        lineRef={ref}
+      />
     ) : (
-      <StaticLine text={text} className={className} lineRef={ref} />
+      <StaticLine text={text} className={className} lineClassName={lineClassName} lineRef={ref} />
     )
+
+  const titleLineClass = 'scrolling-show-lines__line scrolling-show-lines__line--title'
+  const subtitleLineClass = 'scrolling-show-lines__line scrolling-show-lines__line--subtitle'
 
   return (
     <div className="scrolling-show-lines">
@@ -214,8 +228,8 @@ export function ScrollingShowLines({
         </span>
       ) : null}
 
-      {renderLine(title, layout.title, titleClassName, lineRef)}
-      {subtitle ? renderLine(subtitle, layout.subtitle, subtitleClassName) : null}
+      {renderLine(title, layout.title, titleClassName, titleLineClass, lineRef)}
+      {subtitle ? renderLine(subtitle, layout.subtitle, subtitleClassName, subtitleLineClass) : null}
     </div>
   )
 }
