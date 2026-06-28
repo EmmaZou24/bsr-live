@@ -37,6 +37,29 @@
   --bsr-nav-lift-x: calc(var(--bsr-side-expanded) * 4 / 464);
   --bsr-nav-lift-y: calc(var(--bsr-side-expanded) * 5 / 464);
 
+  /* Page header proportions (Figma reference frame: 1247px content width) */
+  --bsr-page-ref: 1247;
+  --bsr-page-title-height: calc(var(--bsr-main-width) * 223 / var(--bsr-page-ref));
+  --bsr-page-title-row-height: calc(var(--bsr-main-width) * 191 / var(--bsr-page-ref));
+  --bsr-page-ticker-height: calc(var(--bsr-main-width) * 32 / var(--bsr-page-ref));
+  --bsr-page-ticker-pad-x: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
+  --bsr-page-ticker-font: calc(var(--bsr-main-width) * 16 / var(--bsr-page-ref));
+  --bsr-page-title-pad: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
+  --bsr-page-title-gap: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
+  --bsr-page-title-font: calc(var(--bsr-main-width) * 96 / var(--bsr-page-ref));
+  --bsr-page-title-illus-w: calc(var(--bsr-main-width) * 308 / var(--bsr-page-ref));
+  --bsr-page-title-illus-h: calc(var(--bsr-main-width) * 160 / var(--bsr-page-ref));
+  --bsr-page-search-height: calc(var(--bsr-main-width) * 36 / var(--bsr-page-ref));
+  --bsr-page-search-pad-x: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
+  --bsr-page-search-field-w: calc(var(--bsr-main-width) * 190 / var(--bsr-page-ref));
+  --bsr-page-search-gap: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
+  --bsr-page-search-icon: calc(var(--bsr-main-width) * 20 / var(--bsr-page-ref));
+  --bsr-page-search-font: calc(var(--bsr-main-width) * 12 / var(--bsr-page-ref));
+  --bsr-page-filter-font: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
+  --bsr-page-filter-pad-y: calc(var(--bsr-main-width) * 4 / var(--bsr-page-ref));
+  --bsr-page-filter-pad-x: calc(var(--bsr-main-width) * 8 / var(--bsr-page-ref));
+  --bsr-page-filter-radius: calc(var(--bsr-main-width) * 28 / var(--bsr-page-ref));
+
   /* Fluid spacing (derived from original 464px side panel) */
   --bsr-space-2xs: clamp(3px, 0.35vw, 4px);
   --bsr-space-xs: clamp(4px, 0.5vw, 8px);

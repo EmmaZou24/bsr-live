@@ -1,6 +1,6 @@
 import { useState, type MouseEvent, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { SidePanel } from '../components/web'
+import { ScrollingBar, SidePanel } from '../components/web'
 import { useLiveStream } from '../context/LiveStreamContext'
 import { navIdToPath } from './routes'
 import './page-shell.css'
@@ -81,6 +81,9 @@ export function PageShell({ mode, children }: PageShellProps) {
         aria-label="Main content"
         onClick={handleContentClick}
       >
+        {mode === 'overlay' && (
+          <ScrollingBar text={tickerText} variant="light" className="page-shell__ticker" />
+        )}
         {children}
       </main>
     </div>

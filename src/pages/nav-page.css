@@ -1,24 +1,25 @@
 .nav-page {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   width: 100%;
-  height: 100%;
-  padding: var(--bsr-space-lg);
-  overflow: auto;
+  overflow: hidden;
   background: var(--bsr-white);
   box-sizing: border-box;
 }
 
-.nav-page__title {
-  margin: 0;
-  font-family: var(--bsr-font);
-  font-size: var(--bsr-text-xl);
-  font-weight: 700;
-  line-height: 1.1;
-  text-transform: lowercase;
+.nav-page__body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--bsr-space-md);
+  box-sizing: border-box;
 }
 
-.nav-page--articles,
-.nav-page--shows {
+.nav-page--articles .nav-page__body,
+.nav-page--shows .nav-page__body {
+  display: flex;
+  flex-direction: column;
   gap: var(--bsr-space-lg);
 }

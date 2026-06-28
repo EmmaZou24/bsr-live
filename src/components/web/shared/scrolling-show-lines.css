@@ -1,5 +1,11 @@
 .scrolling-show-lines {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  position: relative;
 }
 
 .scrolling-show-lines__measure {
@@ -37,6 +43,9 @@
   display: flex;
   align-items: center;
   width: max-content;
+}
+
+.scrolling-show-lines__track--scrolling {
   animation: scrolling-show-lines-marquee var(--scroll-duration, 12s) linear infinite;
 }
 
@@ -67,7 +76,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scrolling-show-lines__track {
+  .scrolling-show-lines__track--scrolling {
     animation: none;
   }
 }

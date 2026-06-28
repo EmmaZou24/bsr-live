@@ -5,6 +5,7 @@
 ### Overall
 - Accessibility
 - Get font files
+- Make filters/tags in Search work, and figure out search functionality (what kind of search? how to connect with post/show cards?)
 
 ### Main Page
 - Setup navigation from subpages to main page

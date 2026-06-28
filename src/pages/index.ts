@@ -1,3 +1,4 @@
+export { NavPage } from './NavPage'
 export { AppLayout } from './AppLayout'
 export { HomePage } from './HomePage'
 export { PageShell } from './PageShell'

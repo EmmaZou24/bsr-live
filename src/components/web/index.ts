@@ -3,8 +3,11 @@ import './tokens.css'
 export { SidePanel } from './SidePanel/SidePanel'
 export type { SidePanelProps, SidePanelTab, SidePanelNavItem, SidePanelNavAvailability } from './SidePanel/SidePanel'
 
-export { TitleSearch } from './TitleSearch/TitleSearch'
-export type { TitleSearchProps, TitleSearchFilter } from './TitleSearch/TitleSearch'
+export { PageTitle } from './TitleSearch/PageTitle'
+export type { PageTitleProps } from './TitleSearch/PageTitle'
+
+export { PageSearch } from './TitleSearch/PageSearch'
+export type { PageSearchProps, PageSearchFilter } from './TitleSearch/PageSearch'
 
 export { BlogPost } from './BlogPost/BlogPost'
 export type { BlogPostProps } from './BlogPost/BlogPost'

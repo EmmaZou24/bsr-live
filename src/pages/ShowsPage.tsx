@@ -1,9 +1,18 @@
+import { useState } from 'react'
+import { PageSearch } from '../components/web'
+import { NavPage } from './NavPage'
 import './nav-page.css'
 
 export function ShowsPage() {
+  const [, setSearchQuery] = useState('')
+
   return (
-    <div className="nav-page">
-      <p className="nav-page__title">shows</p>
-    </div>
+    <NavPage
+      title="shows"
+      className="nav-page--shows"
+      search={<PageSearch filters={[]} onSearchChange={setSearchQuery} />}
+    >
+      {/* Shows content */}
+    </NavPage>
   )
 }

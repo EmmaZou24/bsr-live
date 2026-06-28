@@ -22,6 +22,16 @@ type ScrollLayout = {
 }
 
 const SCROLL_SPEED_PX_PER_SECOND = 32
+const OVERFLOW_TOLERANCE_PX = 2
+
+function measureTextWidth(element: HTMLElement | null): number {
+  if (!element) return 0
+  return Math.ceil(element.getBoundingClientRect().width)
+}
+
+function lineOverflows(textWidth: number, containerWidth: number): boolean {
+  return containerWidth > 0 && textWidth > containerWidth + OVERFLOW_TOLERANCE_PX
+}
 
 function buildLineConfig(
   textWidth: number,
@@ -29,7 +39,7 @@ function buildLineConfig(
   syncContentMax: number,
   loopGap: number,
 ): LineScrollConfig {
-  const shouldScroll = textWidth > containerWidth + 1
+  const shouldScroll = lineOverflows(textWidth, containerWidth)
   const contentMax = shouldScroll ? syncContentMax : textWidth
   const segmentWidth = contentMax + loopGap
 
@@ -73,19 +83,17 @@ function MarqueeLine({
   config,
   className,
   lineClassName,
-  lineRef,
 }: {
   text: string
   config: LineScrollConfig
   className: string
   lineClassName: string
-  lineRef?: React.RefObject<HTMLDivElement | null>
 }) {
   const trackStyle = { '--scroll-duration': `${config.duration}s` } as CSSProperties
 
   return (
-    <div ref={lineRef} className={lineClassName}>
-      <div className="scrolling-show-lines__track" style={trackStyle}>
+    <div className={lineClassName}>
+      <div className="scrolling-show-lines__track scrolling-show-lines__track--scrolling" style={trackStyle}>
         <MarqueeSegment
           text={text}
           textWidth={config.textWidth}
@@ -111,15 +119,13 @@ function StaticLine({
   text,
   className,
   lineClassName,
-  lineRef,
 }: {
   text: string
   className: string
   lineClassName: string
-  lineRef?: React.RefObject<HTMLDivElement | null>
 }): ReactNode {
   return (
-    <div ref={lineRef} className={lineClassName}>
+    <div className={lineClassName}>
       <p className={className}>{text}</p>
     </div>
   )
@@ -139,7 +145,7 @@ export function ScrollingShowLines({
   titleClassName = '',
   subtitleClassName = '',
 }: ScrollingShowLinesProps) {
-  const lineRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
   const titleMeasureRef = useRef<HTMLSpanElement>(null)
   const subtitleMeasureRef = useRef<HTMLSpanElement>(null)
   const [layout, setLayout] = useState<ScrollLayout>({
@@ -148,18 +154,18 @@ export function ScrollingShowLines({
   })
 
   useLayoutEffect(() => {
-    const container = lineRef.current
+    const container = containerRef.current
     const titleMeasure = titleMeasureRef.current
     if (!container || !titleMeasure) return
 
     const update = () => {
-      const titleWidth = titleMeasure.offsetWidth
-      const subtitleWidth = subtitle ? (subtitleMeasureRef.current?.offsetWidth ?? 0) : 0
-      const containerWidth = container.clientWidth
+      const containerWidth = Math.floor(container.getBoundingClientRect().width)
+      const titleWidth = measureTextWidth(titleMeasure)
+      const subtitleWidth = subtitle ? measureTextWidth(subtitleMeasureRef.current) : 0
       const loopGap = Math.max(containerWidth * 0.12, 24)
 
-      const titleOverflows = titleWidth > containerWidth + 1
-      const subtitleOverflows = subtitleWidth > containerWidth + 1
+      const titleOverflows = lineOverflows(titleWidth, containerWidth)
+      const subtitleOverflows = lineOverflows(subtitleWidth, containerWidth)
       const syncScroll = titleOverflows && subtitleOverflows
       const syncContentMax = syncScroll ? Math.max(titleWidth, subtitleWidth) : 0
 
@@ -183,6 +189,10 @@ export function ScrollingShowLines({
 
     const observer = new ResizeObserver(update)
     observer.observe(container)
+    observer.observe(titleMeasure)
+    if (subtitleMeasureRef.current) observer.observe(subtitleMeasureRef.current)
+
+    document.fonts?.ready.then(update).catch(() => {})
 
     return () => observer.disconnect()
   }, [title, subtitle])
@@ -192,25 +202,18 @@ export function ScrollingShowLines({
     config: LineScrollConfig,
     className: string,
     lineClassName: string,
-    ref?: React.RefObject<HTMLDivElement | null>,
   ) =>
     config.shouldScroll ? (
-      <MarqueeLine
-        text={text}
-        config={config}
-        className={className}
-        lineClassName={lineClassName}
-        lineRef={ref}
-      />
+      <MarqueeLine text={text} config={config} className={className} lineClassName={lineClassName} />
     ) : (
-      <StaticLine text={text} className={className} lineClassName={lineClassName} lineRef={ref} />
+      <StaticLine text={text} className={className} lineClassName={lineClassName} />
     )
 
   const titleLineClass = 'scrolling-show-lines__line scrolling-show-lines__line--title'
   const subtitleLineClass = 'scrolling-show-lines__line scrolling-show-lines__line--subtitle'
 
   return (
-    <div className="scrolling-show-lines">
+    <div ref={containerRef} className="scrolling-show-lines">
       <span
         ref={titleMeasureRef}
         className={`scrolling-show-lines__measure ${titleClassName}`.trim()}
@@ -228,7 +231,7 @@ export function ScrollingShowLines({
         </span>
       ) : null}
 
-      {renderLine(title, layout.title, titleClassName, titleLineClass, lineRef)}
+      {renderLine(title, layout.title, titleClassName, titleLineClass)}
       {subtitle ? renderLine(subtitle, layout.subtitle, subtitleClassName, subtitleLineClass) : null}
     </div>
   )
