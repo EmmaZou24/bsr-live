@@ -116,6 +116,10 @@
   overflow: hidden;
 }
 
+.side-panel__show-info .scrolling-show-lines {
+  gap: calc(var(--bsr-side-expanded) * 4 / 464);
+}
+
 .side-panel__show-title,
 .side-panel__show-author {
   margin: 0;
@@ -286,6 +290,12 @@
   transition: opacity 0.12s ease;
 }
 
+.side-panel__nav-badge--portaled {
+  position: fixed;
+  z-index: 1000;
+  opacity: 1;
+}
+
 .side-panel__nav-badge--visible {
   opacity: 1;
 }
@@ -321,6 +331,7 @@
   padding: 0 calc(var(--bsr-side-expanded) * 18 / 464);
 }
 
-.side-panel__ticker .scrolling-bar__text {
+.side-panel__ticker .scrolling-bar__text,
+.side-panel__ticker .scrolling-bar__copy {
   font-size: var(--bsr-side-font-md);
 }

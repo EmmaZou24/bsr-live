@@ -1,4 +1,5 @@
-import { useRef, useState, type MouseEvent } from 'react'
+import { useState, type MouseEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { DEFAULT_TICKER_TEXT } from '../../../lib/spinitron/ticker'
 import dogIllustration from '../../../assets/web/side-panel-dog.png'
 import { ScrollingBar } from '../shared/ScrollingBar'
@@ -108,17 +109,13 @@ function ArrowIcon() {
 }
 
 function UnavailableNavItem({ label }: { label: string }) {
-  const wrapRef = useRef<HTMLDivElement>(null)
   const [badgeVisible, setBadgeVisible] = useState(false)
   const [badgePos, setBadgePos] = useState({ x: 0, y: 0 })
 
   const handlePointerMove = (event: MouseEvent<HTMLDivElement>) => {
-    const rect = wrapRef.current?.getBoundingClientRect()
-    if (!rect) return
-
     setBadgePos({
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
+      x: event.clientX,
+      y: event.clientY,
     })
     setBadgeVisible(true)
   }
@@ -129,7 +126,6 @@ function UnavailableNavItem({ label }: { label: string }) {
 
   return (
     <div
-      ref={wrapRef}
       className="side-panel__nav-item-wrap side-panel__nav-item-wrap--unavailable"
       onMouseMove={handlePointerMove}
       onMouseLeave={handlePointerLeave}
@@ -142,16 +138,21 @@ function UnavailableNavItem({ label }: { label: string }) {
       >
         <span className="side-panel__nav-item-label">{label}</span>
       </button>
-      <span
-        className={`side-panel__nav-badge${badgeVisible ? ' side-panel__nav-badge--visible' : ''}`}
-        style={{
-          left: badgePos.x,
-          top: badgePos.y,
-        }}
-        aria-hidden={!badgeVisible}
-      >
-        UNDER CONSTRUCTION...
-      </span>
+      {badgeVisible
+        ? createPortal(
+            <span
+              className="side-panel__nav-badge side-panel__nav-badge--visible side-panel__nav-badge--portaled"
+              style={{
+                left: badgePos.x,
+                top: badgePos.y,
+              }}
+              aria-hidden={false}
+            >
+              UNDER CONSTRUCTION...
+            </span>,
+            document.body,
+          )
+        : null}
     </div>
   )
 }

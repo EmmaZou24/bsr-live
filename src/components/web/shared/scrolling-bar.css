@@ -1,4 +1,5 @@
 .scrolling-bar {
+  position: relative;
   display: flex;
   align-items: center;
   height: 3.8vh;
@@ -18,14 +19,32 @@
   color: var(--bsr-white);
 }
 
+.scrolling-bar__measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 .scrolling-bar__track {
   display: flex;
   align-items: center;
   width: max-content;
+  will-change: transform;
+}
+
+.scrolling-bar__track--ready {
   animation: scrolling-bar-marquee var(--scroll-duration, 24s) linear infinite;
 }
 
-.scrolling-bar__text {
+.scrolling-bar__segment {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.scrolling-bar__text,
+.scrolling-bar__copy {
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -53,12 +72,12 @@
   }
 
   to {
-    transform: translateX(-50%);
+    transform: translateX(calc(-1 * var(--segment-width, 0px)));
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scrolling-bar__track {
+  .scrolling-bar__track--ready {
     animation: none;
   }
 }

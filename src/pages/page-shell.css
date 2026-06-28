@@ -68,6 +68,7 @@
   transition: none;
 }
 
-.page-shell__ticker .scrolling-bar__text {
+.page-shell__ticker .scrolling-bar__text,
+.page-shell__ticker .scrolling-bar__copy {
   font-size: var(--bsr-page-ticker-font);
 }
