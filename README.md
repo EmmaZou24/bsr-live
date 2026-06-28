@@ -2,10 +2,11 @@
 
 ## TODO
 
+### Overall
+- Accessibility
+
 ### Main Page
-- Integrate w/ Spinitron
 - Setup navigation from subpages to main page
-- Scrolling bottom of sidebar (should it keep scrolling while the sidebar is closed?)
 - Overflow scrolling of song info on top of sidebar
 - Chat
 
@@ -35,7 +36,7 @@ npm run dev
 Copy `.env.example` to `.env` and fill in values as needed:
 
 ```bash
-cp .env.example .env
+cp .env.example .env #Copies the file
 ```
 
 Restart the dev server after changing `.env`.

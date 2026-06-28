@@ -2,6 +2,7 @@ import { useRef, useState, type MouseEvent } from 'react'
 import { DEFAULT_TICKER_TEXT } from '../../../lib/spinitron/ticker'
 import dogIllustration from '../../../assets/web/side-panel-dog.png'
 import { ScrollingBar } from '../shared/ScrollingBar'
+import { ScrollingShowLines } from '../shared/ScrollingShowLines'
 import './side-panel.css'
 
 export type SidePanelTab = 'about' | 'chat' | 'show-details'
@@ -207,12 +208,18 @@ export function SidePanel({
         </button>
 
         <div className="side-panel__show-info">
-          <p className="side-panel__show-title">
-            {isLoadingNowPlaying ? 'Loading…' : showTitle}
-          </p>
-          <p className="side-panel__show-author">
-            {isLoadingNowPlaying ? '' : showAuthor}
-          </p>
+          {isLoadingNowPlaying ? (
+            <p className="side-panel__show-title">Loading…</p>
+          ) : (
+            <>
+            <ScrollingShowLines
+              title={showTitle}
+              subtitle={showAuthor}
+              titleClassName="side-panel__show-title"
+              subtitleClassName="side-panel__show-author"
+            />
+            </>
+          )}
         </div>
 
         <button

@@ -15,6 +15,10 @@ export function isSpinitronConfigured(): boolean {
 }
 
 function getApiBase(): string {
+  // In dev, always use the Vite proxy so the Bearer token stays server-side.
+  if (import.meta.env.DEV) {
+    return DEFAULT_API_BASE
+  }
   return import.meta.env.VITE_SPINITRON_API_BASE ?? DEFAULT_API_BASE
 }
 
