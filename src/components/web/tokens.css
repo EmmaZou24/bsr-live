@@ -59,6 +59,11 @@
   --bsr-page-filter-pad-y: calc(var(--bsr-main-width) * 4 / var(--bsr-page-ref));
   --bsr-page-filter-pad-x: calc(var(--bsr-main-width) * 8 / var(--bsr-page-ref));
   --bsr-page-filter-radius: calc(var(--bsr-main-width) * 28 / var(--bsr-page-ref));
+  --bsr-page-filter-pill-height: calc(
+    var(--bsr-page-filter-pad-y) * 2 + var(--bsr-page-filter-font) * 1.1 + var(--bsr-border-width) * 2
+  );
+  --bsr-page-tag-remove-size: calc(var(--bsr-main-width) * 5 / var(--bsr-page-ref));
+  --bsr-page-tag-remove-hit: calc(var(--bsr-main-width) * 10 / var(--bsr-page-ref));
 
   /* Fluid spacing (derived from original 464px side panel) */
   --bsr-space-2xs: clamp(3px, 0.35vw, 4px);

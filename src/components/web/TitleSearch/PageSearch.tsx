@@ -5,26 +5,59 @@ export type PageSearchFilter = {
   label: string
 }
 
+export type PageSearchFilterCategory = {
+  id: string
+  label?: string
+  multiSelect?: boolean
+  filters: PageSearchFilter[]
+}
+
+export type PageSearchSelection = Record<string, string[]>
+
+export type PageSearchSelectedTag = {
+  categoryId: string
+  filterId: string
+  label: string
+}
+
 export type PageSearchProps = {
   searchPlaceholder?: string
-  filters?: PageSearchFilter[]
-  activeFilterId?: string
+  filterCategories?: PageSearchFilterCategory[]
+  selectedFilters?: PageSearchSelection
   onSearchChange?: (value: string) => void
-  onFilterChange?: (id: string) => void
+  onFilterChange?: (categoryId: string, selectedIds: string[]) => void
   className?: string
 }
 
-const defaultFilters: PageSearchFilter[] = [
-  { id: 'blog', label: 'BLOG' },
-  { id: 'news', label: 'NEWS' },
-  { id: 'interviews', label: 'INTERVIEWS' },
-  { id: 'community', label: 'COMMUNITY' },
-  { id: 'new-music', label: 'NEW MUSIC' },
-  { id: 'listening-guide', label: 'LISTENING GUIDE' },
-  { id: 'review', label: 'REVIEW' },
-  { id: 'electronic', label: 'ELECTRONIC' },
-  { id: 'indie', label: 'INDIE' },
-]
+function toggleFilterSelection(
+  category: PageSearchFilterCategory,
+  filterId: string,
+  selectedIds: string[],
+): string[] {
+  const isSelected = selectedIds.includes(filterId)
+
+  if (category.multiSelect) {
+    return isSelected ? selectedIds.filter((id) => id !== filterId) : [...selectedIds, filterId]
+  }
+
+  return isSelected ? [] : [filterId]
+}
+
+function getSelectedTags(
+  filterCategories: PageSearchFilterCategory[],
+  selectedFilters: PageSearchSelection,
+): PageSearchSelectedTag[] {
+  return filterCategories.flatMap((category) => {
+    const selectedIds = selectedFilters[category.id] ?? []
+
+    return selectedIds.flatMap((filterId) => {
+      const filter = category.filters.find((item) => item.id === filterId)
+      if (!filter) return []
+
+      return [{ categoryId: category.id, filterId, label: filter.label }]
+    })
+  })
+}
 
 function SearchIcon() {
   return (
@@ -35,18 +68,60 @@ function SearchIcon() {
   )
 }
 
+function TagRemoveIcon() {
+  return (
+    <svg viewBox="0 0 8 8" aria-hidden="true" className="page-search__tag-remove-icon">
+      <line x1="1" y1="1" x2="7" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      <line x1="7" y1="1" x2="1" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function PageSearch({
   searchPlaceholder = 'What are you looking for?',
-  filters = defaultFilters,
-  activeFilterId,
+  filterCategories = [],
+  selectedFilters = {},
   onSearchChange,
   onFilterChange,
   className = '',
 }: PageSearchProps) {
+  const selectedTags = getSelectedTags(filterCategories, selectedFilters)
+  const hasFilters = filterCategories.some((category) => category.filters.length > 0)
+
   return (
     <div className={`page-search ${className}`.trim()}>
       <label className="page-search__field">
         <SearchIcon />
+
+        {selectedTags.length > 0 && (
+          <div className="page-search__tags">
+            {selectedTags.map((tag) => {
+              const categorySelection = selectedFilters[tag.categoryId] ?? []
+
+              return (
+                <span key={`${tag.categoryId}-${tag.filterId}`} className="page-search__tag">
+                  {tag.label}
+                  <button
+                    type="button"
+                    className="page-search__tag-remove"
+                    aria-label={`Remove ${tag.label} filter`}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      event.stopPropagation()
+                      onFilterChange?.(
+                        tag.categoryId,
+                        categorySelection.filter((id) => id !== tag.filterId),
+                      )
+                    }}
+                  >
+                    <TagRemoveIcon />
+                  </button>
+                </span>
+              )
+            })}
+          </div>
+        )}
+
         <input
           type="search"
           className="page-search__input"
@@ -55,19 +130,43 @@ export function PageSearch({
         />
       </label>
 
-      {filters.length > 0 && (
-        <div className="page-search__filters" role="list" aria-label="Filters">
-          {filters.map((filter) => (
-            <button
-              key={filter.id}
-              type="button"
-              role="listitem"
-              className={`page-search__filter ${activeFilterId === filter.id ? 'page-search__filter--active' : ''}`}
-              onClick={() => onFilterChange?.(filter.id)}
-            >
-              {filter.label}
-            </button>
-          ))}
+      {hasFilters && (
+        <div className="page-search__filters" role="toolbar" aria-label="Filters">
+          {filterCategories.map((category) => {
+            if (category.filters.length === 0) return null
+
+            const categorySelection = selectedFilters[category.id] ?? []
+
+            return (
+              <div
+                key={category.id}
+                className="page-search__filter-group"
+                role="group"
+                aria-label={category.label ?? category.id}
+              >
+                {category.filters.map((filter) => {
+                  const isActive = categorySelection.includes(filter.id)
+
+                  return (
+                  <button
+                    key={filter.id}
+                    type="button"
+                    className={`page-search__filter ${isActive ? 'page-search__filter--active' : ''}`}
+                    aria-pressed={isActive}
+                    onClick={() =>
+                      onFilterChange?.(
+                        category.id,
+                        toggleFilterSelection(category, filter.id, categorySelection),
+                      )
+                    }
+                  >
+                    {filter.label}
+                  </button>
+                  )
+                })}
+              </div>
+            )
+          })}
         </div>
       )}
     </div>

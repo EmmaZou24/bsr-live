@@ -7,7 +7,13 @@ export { PageTitle } from './TitleSearch/PageTitle'
 export type { PageTitleProps } from './TitleSearch/PageTitle'
 
 export { PageSearch } from './TitleSearch/PageSearch'
-export type { PageSearchProps, PageSearchFilter } from './TitleSearch/PageSearch'
+export type {
+  PageSearchProps,
+  PageSearchFilter,
+  PageSearchFilterCategory,
+  PageSearchSelection,
+  PageSearchSelectedTag,
+} from './TitleSearch/PageSearch'
 
 export { BlogPost } from './BlogPost/BlogPost'
 export type { BlogPostProps } from './BlogPost/BlogPost'
