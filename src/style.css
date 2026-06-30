@@ -11,7 +11,7 @@ body {
 body {
   background: #ffffff;
   color: #000000;
-  font-family: system-ui, sans-serif;
+  font-family: var(--bsr-font, 'MNKYMaurice', system-ui, sans-serif);
 }
 
 #app {

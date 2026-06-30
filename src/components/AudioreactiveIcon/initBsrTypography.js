@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
 import opentype from 'opentype.js';
-import fontUrl from '../../assets/audioreactive-icon/MNKYMauriceTRIAL-Bold.otf?url';
+import fontUrl from '../../assets/fonts/MNKYMaurice-Bold.otf?url';
 import defaultPreset from '../../assets/audioreactive-icon/bsr_preset.json';
 
 export function initBsrTypography({ container, audioElement, onReady }) {

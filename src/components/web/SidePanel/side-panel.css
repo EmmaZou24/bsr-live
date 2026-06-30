@@ -333,5 +333,5 @@
 
 .side-panel__ticker .scrolling-bar__text,
 .side-panel__ticker .scrolling-bar__copy {
-  font-size: var(--bsr-side-font-md);
+  font-size: var(--bsr-side-ticker-font);
 }

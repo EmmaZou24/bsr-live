@@ -1,8 +1,49 @@
 @font-face {
   font-family: 'MNKYMaurice';
-  src: url('../../assets/audioreactive-icon/MNKYMauriceTRIAL-Bold.otf') format('opentype');
+  src: url('../../assets/fonts/MNKYMaurice-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MNKYMaurice';
+  src: url('../../assets/fonts/MNKYMaurice-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MNKYMaurice';
+  src: url('../../assets/fonts/MNKYMaurice-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MNKYMaurice';
+  src: url('../../assets/fonts/MNKYMaurice-Bold.otf') format('opentype');
   font-weight: 700;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MNKYMaurice';
+  src: url('../../assets/fonts/MNKYMaurice-Extrabold.otf') format('opentype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MNKYMaurice';
+  src: url('../../assets/fonts/MNKYMaurice-Black.otf') format('opentype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
 }
 
 :root {
@@ -23,19 +64,21 @@
   --bsr-screen-height: 100svh;
 
   /* Side panel proportions (Figma reference frame: 464px wide) */
-  --bsr-side-pad: calc(var(--bsr-side-expanded) * 18 / 464);
-  --bsr-side-row: calc(var(--bsr-side-expanded) * 54 / 464);
-  --bsr-side-header-row: calc(var(--bsr-side-expanded) * 58 / 464);
-  --bsr-side-font: calc(var(--bsr-side-expanded) * 18 / 464);
-  --bsr-side-font-sm: calc(var(--bsr-side-expanded) * 12 / 464);
-  --bsr-side-font-xs: calc(var(--bsr-side-expanded) * 9 / 464);
-  --bsr-side-font-md: calc(var(--bsr-side-expanded) * 16 / 464);
-  --bsr-side-font-lg: calc(var(--bsr-side-expanded) * 27 / 464);
-  --bsr-side-gap: calc(var(--bsr-side-expanded) * 9 / 464);
-  --bsr-side-gap-lg: calc(var(--bsr-side-expanded) * 28 / 464);
-  --bsr-side-ticker: calc(var(--bsr-side-expanded) * 32 / 464);
-  --bsr-nav-lift-x: calc(var(--bsr-side-expanded) * 4 / 464);
-  --bsr-nav-lift-y: calc(var(--bsr-side-expanded) * 5 / 464);
+  --bsr-side-ref: 464;
+  --bsr-side-pad: calc(var(--bsr-side-expanded) * 18 / var(--bsr-side-ref));
+  --bsr-side-row: calc(var(--bsr-side-expanded) * 54 / var(--bsr-side-ref));
+  --bsr-side-header-row: calc(var(--bsr-side-expanded) * 58 / var(--bsr-side-ref));
+  --bsr-side-font: calc(var(--bsr-side-expanded) * 18 / var(--bsr-side-ref));
+  --bsr-side-font-sm: calc(var(--bsr-side-expanded) * 12 / var(--bsr-side-ref));
+  --bsr-side-font-xs: calc(var(--bsr-side-expanded) * 9 / var(--bsr-side-ref));
+  --bsr-side-font-md: calc(var(--bsr-side-expanded) * 16 / var(--bsr-side-ref));
+  --bsr-side-font-lg: calc(var(--bsr-side-expanded) * 27 / var(--bsr-side-ref));
+  --bsr-side-gap: calc(var(--bsr-side-expanded) * 9 / var(--bsr-side-ref));
+  --bsr-side-gap-lg: calc(var(--bsr-side-expanded) * 28 / var(--bsr-side-ref));
+  --bsr-side-ticker: calc(var(--bsr-side-expanded) * 32 / var(--bsr-side-ref));
+  --bsr-side-ticker-font: calc(var(--bsr-side-expanded) * 16 / var(--bsr-side-ref));
+  --bsr-nav-lift-x: calc(var(--bsr-side-expanded) * 4 / var(--bsr-side-ref));
+  --bsr-nav-lift-y: calc(var(--bsr-side-expanded) * 5 / var(--bsr-side-ref));
 
   /* Page header proportions (Figma reference frame: 1247px content width) */
   --bsr-page-ref: 1247;
@@ -64,23 +107,29 @@
   );
   --bsr-page-tag-remove-size: calc(var(--bsr-main-width) * 5 / var(--bsr-page-ref));
   --bsr-page-tag-remove-hit: calc(var(--bsr-main-width) * 10 / var(--bsr-page-ref));
+  --bsr-page-body-pad: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
+  --bsr-page-grid-gap: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
 
-  /* Fluid spacing (derived from original 464px side panel) */
-  --bsr-space-2xs: clamp(3px, 0.35vw, 4px);
-  --bsr-space-xs: clamp(4px, 0.5vw, 8px);
-  --bsr-space-sm: clamp(8px, 1vw, 9px);
-  --bsr-space-md: clamp(12px, 1.5vw, 18px);
-  --bsr-space-lg: clamp(20px, 2.5vw, 28px);
-
-  /* Card proportions from Figma (222 × 338) */
-  --bsr-card-width: calc(var(--bsr-main-width-expanded) * 0.178);
+  /* Card proportions (Figma reference frame: 222 × 338, within 1247px page width) */
+  --bsr-card-ref: 222;
+  --bsr-card-width: calc(var(--bsr-main-width) * var(--bsr-card-ref) / var(--bsr-page-ref));
   --bsr-card-aspect: 222 / 338;
+  --bsr-card-font-date: calc(var(--bsr-card-width) * 12 / var(--bsr-card-ref));
+  --bsr-card-font-title: calc(var(--bsr-card-width) * 18 / var(--bsr-card-ref));
+  --bsr-card-font-author: calc(var(--bsr-card-width) * 12 / var(--bsr-card-ref));
+  --bsr-card-font-tag: calc(var(--bsr-card-width) * 9 / var(--bsr-card-ref));
+  --bsr-card-pad: calc(var(--bsr-card-width) * 9 / var(--bsr-card-ref));
+  --bsr-card-date-pad-x: calc(var(--bsr-card-width) * 9 / var(--bsr-card-ref));
+  --bsr-card-date-pad-y: calc(var(--bsr-card-width) * 3 / var(--bsr-card-ref));
+  --bsr-card-tag-pad-x: calc(var(--bsr-card-width) * 8 / var(--bsr-card-ref));
+  --bsr-card-tag-pad-y: calc(var(--bsr-card-width) * 4 / var(--bsr-card-ref));
+  --bsr-card-tag-radius: calc(var(--bsr-card-width) * 28 / var(--bsr-card-ref));
+  --bsr-card-text-gap: calc(var(--bsr-card-width) * 3 / var(--bsr-card-ref));
+  --bsr-card-tags-gap: calc(var(--bsr-card-width) * 9 / var(--bsr-card-ref));
+}
 
-  /* Type scale */
-  --bsr-text-2xs: clamp(8px, 0.55vw, 9px);
-  --bsr-text-xs: clamp(10px, 0.75vw, 12px);
-  --bsr-text-sm: clamp(12px, 1vw, 16px);
-  --bsr-text-md: clamp(14px, 1.1vw, 18px);
-  --bsr-text-lg: clamp(20px, 2vw, 27px);
-  --bsr-text-xl: clamp(40px, 5vw, 96px);
+html,
+body {
+  font-family: var(--bsr-font);
+  font-synthesis: none;
 }

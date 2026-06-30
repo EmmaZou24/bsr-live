@@ -56,6 +56,8 @@
   overflow: hidden;
   box-sizing: border-box;
   transition: none;
+  container-type: inline-size;
+  container-name: page-shell;
 }
 
 .page-shell__ticker.scrolling-bar {
@@ -64,11 +66,24 @@
   min-height: var(--bsr-page-ticker-height);
   max-height: var(--bsr-page-ticker-height);
   padding: 0 var(--bsr-page-ticker-pad-x);
+  box-sizing: border-box;
+  font-size: var(--bsr-page-ticker-font);
   flex-shrink: 0;
   transition: none;
 }
 
+@supports (width: 1cqw) {
+  .page-shell__ticker.scrolling-bar {
+    height: calc(100cqw * 32 / var(--bsr-page-ref));
+    min-height: calc(100cqw * 32 / var(--bsr-page-ref));
+    max-height: calc(100cqw * 32 / var(--bsr-page-ref));
+    padding: 0 calc(100cqw * 18 / var(--bsr-page-ref));
+    font-size: calc(100cqw * 16 / var(--bsr-page-ref));
+  }
+}
+
 .page-shell__ticker .scrolling-bar__text,
 .page-shell__ticker .scrolling-bar__copy {
-  font-size: var(--bsr-page-ticker-font);
+  font-size: inherit;
+  line-height: 1.1;
 }
