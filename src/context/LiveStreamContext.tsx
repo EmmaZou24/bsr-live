@@ -15,6 +15,7 @@ import {
   isSpinitronConfigured,
 } from '../lib/spinitron/client'
 import { DEFAULT_TICKER_TEXT, formatTickerText } from '../lib/spinitron/ticker'
+import { resumeStreamAudio } from '../lib/streamAudioGraph'
 import type { NowPlaying } from '../lib/spinitron/types'
 
 const NOW_PLAYING_POLL_MS = 30_000
@@ -129,9 +130,12 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
       <audio
         ref={audioRef}
         src={BSR_STREAM_URL}
+        crossOrigin="anonymous"
         preload="none"
         className="live-stream__audio"
         onPlaying={() => {
+          const audio = audioRef.current
+          if (audio) resumeStreamAudio(audio)
           setIsPlaying(true)
           setIsStreamLoading(false)
         }}

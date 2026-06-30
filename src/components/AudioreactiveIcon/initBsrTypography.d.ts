@@ -1,7 +1,6 @@
 export type BsrTypographyInstance = {
   dispose: () => void
   connectAudio: () => void
-  disconnectAudio: () => void
 }
 
 export function initBsrTypography(options: {

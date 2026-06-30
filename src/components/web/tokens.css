@@ -90,6 +90,7 @@
   --bsr-page-title-pad: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
   --bsr-page-title-gap: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
   --bsr-page-title-font: calc(var(--bsr-main-width) * 96 / var(--bsr-page-ref));
+  --bsr-page-title-text-height: calc(var(--bsr-main-width) * 90 / var(--bsr-page-ref));
   --bsr-page-title-illus-w: calc(var(--bsr-main-width) * 308 / var(--bsr-page-ref));
   --bsr-page-title-illus-h: calc(var(--bsr-main-width) * 160 / var(--bsr-page-ref));
   --bsr-page-search-height: calc(var(--bsr-main-width) * 36 / var(--bsr-page-ref));
@@ -107,6 +108,8 @@
   );
   --bsr-page-tag-remove-size: calc(var(--bsr-main-width) * 5 / var(--bsr-page-ref));
   --bsr-page-tag-remove-hit: calc(var(--bsr-main-width) * 10 / var(--bsr-page-ref));
+  --bsr-page-search-clear-size: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
+  --bsr-page-search-clear-hit: calc(var(--bsr-main-width) * 14 / var(--bsr-page-ref));
   --bsr-page-body-pad: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
   --bsr-page-grid-gap: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
 

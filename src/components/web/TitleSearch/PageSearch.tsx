@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import './title-search.css'
 
 export type PageSearchFilter = {
@@ -68,13 +69,17 @@ function SearchIcon() {
   )
 }
 
-function TagRemoveIcon() {
+function ClearIcon({ className = '' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 8 8" aria-hidden="true" className="page-search__tag-remove-icon">
+    <svg viewBox="0 0 8 8" aria-hidden="true" className={className}>
       <line x1="1" y1="1" x2="7" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       <line x1="7" y1="1" x2="1" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   )
+}
+
+function TagRemoveIcon() {
+  return <ClearIcon className="page-search__tag-remove-icon" />
 }
 
 export function PageSearch({
@@ -85,8 +90,14 @@ export function PageSearch({
   onFilterChange,
   className = '',
 }: PageSearchProps) {
+  const [query, setQuery] = useState('')
   const selectedTags = getSelectedTags(filterCategories, selectedFilters)
   const hasFilters = filterCategories.some((category) => category.filters.length > 0)
+
+  const handleQueryChange = (value: string) => {
+    setQuery(value)
+    onSearchChange?.(value)
+  }
 
   return (
     <div className={`page-search ${className}`.trim()}>
@@ -123,11 +134,28 @@ export function PageSearch({
         )}
 
         <input
-          type="search"
+          type="text"
+          role="searchbox"
           className="page-search__input"
           placeholder={searchPlaceholder}
-          onChange={(event) => onSearchChange?.(event.target.value)}
+          value={query}
+          onChange={(event) => handleQueryChange(event.target.value)}
         />
+
+        {query.length > 0 && (
+          <button
+            type="button"
+            className="page-search__clear"
+            aria-label="Clear search"
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              handleQueryChange('')
+            }}
+          >
+            <ClearIcon className="page-search__clear-icon" />
+          </button>
+        )}
       </label>
 
       {hasFilters && (

@@ -22,17 +22,15 @@ export function PageTitle({
 
   return (
     <header className={`page-title ${className}`.trim()}>
-      <div className="page-title__row">
-        <h1 className="page-title__heading">{title}</h1>
-        {showIllustration && (
-          <img
-            src={illustration}
-            alt=""
-            className="page-title__illustration"
-            onError={() => setIllustrationError(true)}
-          />
-        )}
-      </div>
+      <h1 className="page-title__heading">{title}</h1>
+      {showIllustration && (
+        <img
+          src={illustration}
+          alt=""
+          className="page-title__illustration"
+          onError={() => setIllustrationError(true)}
+        />
+      )}
     </header>
   )
 }
