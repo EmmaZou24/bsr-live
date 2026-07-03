@@ -4,6 +4,19 @@ import './blog-post.css'
 
 export type BlogPostAccent = 'pink' | 'yellow' | 'blue'
 
+function accentFromCoarseTag(coarseTag: string): BlogPostAccent {
+  switch (coarseTag.toUpperCase()) {
+    case 'NEWS':
+      return 'yellow'
+    case 'INTERVIEW':
+    case 'INTERVIEWS':
+      return 'blue'
+    case 'BLOG':
+    default:
+      return 'pink'
+  }
+}
+
 export type BlogPostProps = {
   title?: string
   author?: string
@@ -12,7 +25,6 @@ export type BlogPostProps = {
   imageAlt?: string
   coarseTag?: string
   granularTag?: string
-  accent?: BlogPostAccent
   href?: string
   onAuthorClick?: () => void
   className?: string
@@ -26,11 +38,11 @@ export function BlogPost({
   imageAlt = '',
   coarseTag = 'BLOG',
   granularTag = 'COMMUNITY',
-  accent = 'pink',
   href,
   onAuthorClick,
   className = '',
 }: BlogPostProps) {
+  const accent = accentFromCoarseTag(coarseTag)
   const rootClassName = `blog-post blog-post--accent-${accent}${href ? ' blog-post--link' : ''} ${className}`.trim()
 
   const content = (

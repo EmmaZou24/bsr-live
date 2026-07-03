@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import {
   BlogPost,
   PageSearch,
-  type BlogPostAccent,
   type PageSearchFilterCategory,
   type PageSearchSelection,
 } from '../components/web'
@@ -17,7 +16,6 @@ type MockArticle = {
   date: string
   coarseTag: string
   granularTag?: string
-  accent: BlogPostAccent
   imageAlt: string
 }
 
@@ -29,7 +27,6 @@ const mockArticles: MockArticle[] = [
     date: 'July 12th, 2026',
     coarseTag: 'BLOG',
     granularTag: 'COMMUNITY',
-    accent: 'pink',
     imageAlt: 'Chicken coop at a Rhode Island farm',
   },
   {
@@ -38,7 +35,6 @@ const mockArticles: MockArticle[] = [
     author: 'millie cheng',
     date: 'July 12th, 2026',
     coarseTag: 'NEWS',
-    accent: 'yellow',
     imageAlt: 'Chicken coop at a Rhode Island farm',
   },
   {
@@ -47,7 +43,6 @@ const mockArticles: MockArticle[] = [
     author: 'millie cheng',
     date: 'July 12th, 2026',
     coarseTag: 'INTERVIEWS',
-    accent: 'blue',
     imageAlt: 'Chicken coop at a Rhode Island farm',
   },
   {
@@ -57,7 +52,6 @@ const mockArticles: MockArticle[] = [
     date: 'June 28th, 2026',
     coarseTag: 'BLOG',
     granularTag: 'COMMUNITY',
-    accent: 'pink',
     imageAlt: 'Microphone in the BSR studio',
   },
   {
@@ -67,7 +61,6 @@ const mockArticles: MockArticle[] = [
     date: 'June 19th, 2026',
     coarseTag: 'BLOG',
     granularTag: 'LISTENING GUIDE',
-    accent: 'yellow',
     imageAlt: 'Stack of vinyl records',
   },
   {
@@ -77,7 +70,6 @@ const mockArticles: MockArticle[] = [
     date: 'June 3rd, 2026',
     coarseTag: 'BLOG',
     granularTag: 'REVIEW',
-    accent: 'blue',
     imageAlt: 'Album artwork on a turntable',
   },
   {
@@ -87,7 +79,6 @@ const mockArticles: MockArticle[] = [
     date: 'May 22nd, 2026',
     coarseTag: 'NEWS',
     granularTag: 'COMMUNITY',
-    accent: 'pink',
     imageAlt: 'Crowd at a local show',
   },
 ]
@@ -178,7 +169,6 @@ export function ArticlesPage() {
             imageAlt={article.imageAlt}
             coarseTag={article.coarseTag}
             granularTag={article.granularTag}
-            accent={article.accent}
           />
         ))}
       </div>
