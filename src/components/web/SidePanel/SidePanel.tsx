@@ -29,7 +29,7 @@ export type SidePanelProps = {
   tickerText?: string
   navItems?: SidePanelNavItem[]
   onPlayClick?: () => void
-  onMenuClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+  onHomeClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
   onTabChange?: (tab: SidePanelTab) => void
   onNavClick?: (id: string) => void
   className?: string
@@ -78,16 +78,10 @@ function PlayThrobber() {
   )
 }
 
-function MenuIcon({ vertical = false }: { vertical?: boolean }) {
+function HomeIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className={`side-panel__menu-icon ${vertical ? 'side-panel__menu-icon--vertical' : ''}`.trim()}
-    >
-      <line x1="4" y1="6" x2="20" y2="6" stroke="currentColor" strokeWidth="2" />
-      <line x1="4" y1="12" x2="20" y2="12" stroke="currentColor" strokeWidth="2" />
-      <line x1="4" y1="18" x2="20" y2="18" stroke="currentColor" strokeWidth="2" />
+    <svg viewBox="0 0 24 24" aria-hidden="true" className="side-panel__home-icon" fill="currentColor">
+      <path d="M12 3 2 12h3v9h6v-6h2v6h6v-9h3L12 3Z" />
     </svg>
   )
 }
@@ -169,7 +163,7 @@ export function SidePanel({
   tickerText = defaultTickerText,
   navItems = defaultNavItems,
   onPlayClick,
-  onMenuClick,
+  onHomeClick,
   onTabChange,
   onNavClick,
   className = '',
@@ -193,19 +187,14 @@ export function SidePanel({
       <div className="side-panel__header">
         <button
           type="button"
-          className="side-panel__play"
-          aria-label={
-            isStreamLoading ? 'Loading stream' : isPlaying ? 'Pause stream' : 'Play stream'
-          }
-          aria-pressed={isPlaying}
-          aria-busy={isStreamLoading}
-          disabled={isStreamLoading}
+          className="side-panel__home"
+          aria-label="Go to homepage"
           onClick={(event) => {
             event.stopPropagation()
-            onPlayClick?.()
+            onHomeClick?.(event)
           }}
         >
-          {isStreamLoading ? <PlayThrobber /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
+          <HomeIcon />
         </button>
 
         <div className="side-panel__show-info">
@@ -227,12 +216,19 @@ export function SidePanel({
 
         <button
           type="button"
-          className="side-panel__menu"
-          aria-label={expanded ? 'Collapse menu' : 'Expand menu'}
-          aria-expanded={expanded}
-          onClick={onMenuClick}
+          className="side-panel__play"
+          aria-label={
+            isStreamLoading ? 'Loading stream' : isPlaying ? 'Pause stream' : 'Play stream'
+          }
+          aria-pressed={isPlaying}
+          aria-busy={isStreamLoading}
+          disabled={isStreamLoading}
+          onClick={(event) => {
+            event.stopPropagation()
+            onPlayClick?.()
+          }}
         >
-          <MenuIcon vertical={!expanded} />
+          {isStreamLoading ? <PlayThrobber /> : isPlaying ? <PauseIcon /> : <PlayIcon />}
         </button>
       </div>
 

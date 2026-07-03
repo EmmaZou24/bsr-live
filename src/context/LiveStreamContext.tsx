@@ -74,13 +74,19 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
     return () => window.clearInterval(intervalId)
   }, [refreshNowPlaying])
 
-  useEffect(() => {
-    const preloadStream = () => {
-      const audio = audioRef.current
-      if (!audio || !audio.paused) return
-      audio.load()
-    }
+  const preloadStream = useCallback(() => {
+    const audio = audioRef.current
+    if (!audio || !audio.paused) return
+    audio.load()
+  }, [])
 
+  const scheduleStreamPreload = useCallback(() => {
+    queueMicrotask(() => {
+      preloadStream()
+    })
+  }, [preloadStream])
+
+  useEffect(() => {
     if (document.readyState === 'complete') {
       preloadStream()
       return
@@ -88,7 +94,7 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('load', preloadStream, { once: true })
     return () => window.removeEventListener('load', preloadStream)
-  }, [])
+  }, [preloadStream])
 
   const togglePlay = useCallback(async () => {
     const audio = audioRef.current
@@ -96,7 +102,7 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
 
     if (audio.paused) {
       if (audio.error) {
-        audio.load()
+        preloadStream()
       }
 
       setIsStreamLoading(true)
@@ -112,7 +118,7 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
     }
 
     audio.pause()
-  }, [])
+  }, [preloadStream])
 
   return (
     <LiveStreamContext.Provider
@@ -135,13 +141,15 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
         className="live-stream__audio"
         onPlaying={() => {
           const audio = audioRef.current
-          if (audio) resumeStreamAudio(audio)
+          if (!audio || audio.paused) return
+          resumeStreamAudio(audio)
           setIsPlaying(true)
           setIsStreamLoading(false)
         }}
         onPause={() => {
           setIsPlaying(false)
           setIsStreamLoading(false)
+          scheduleStreamPreload()
         }}
         onEnded={() => {
           setIsPlaying(false)

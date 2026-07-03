@@ -2,7 +2,7 @@ import { useState, type MouseEvent, type ReactNode } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ScrollingBar, SidePanel } from '../components/web'
 import { useLiveStream } from '../context/LiveStreamContext'
-import { navIdToPath } from './routes'
+import { navIdToPath, ROUTES } from './routes'
 import './page-shell.css'
 
 type PageShellProps = {
@@ -21,9 +21,10 @@ export function PageShell({ mode, children }: PageShellProps) {
     if (!sidebarExpanded) setSidebarExpanded(true)
   }
 
-  const handleMenuClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handleHomeClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation()
-    setSidebarExpanded((open) => !open)
+    if (sidebarExpanded) setSidebarExpanded(false)
+    if (pathname !== ROUTES.home) navigate(ROUTES.home)
   }
 
   const handleContentClick = () => {
@@ -71,7 +72,7 @@ export function PageShell({ mode, children }: PageShellProps) {
           onPlayClick={() => {
             void togglePlay()
           }}
-          onMenuClick={handleMenuClick}
+          onHomeClick={handleHomeClick}
           onNavClick={handleNavClick}
         />
       </div>
