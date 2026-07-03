@@ -48,6 +48,8 @@
 
 :root {
   --bsr-pink: #ff0a4f;
+  --bsr-yellow: #ffea4c;
+  --bsr-blue: #4c79ff;
   --bsr-black: #000000;
   --bsr-white: #ffffff;
   --bsr-border: 2px solid var(--bsr-black);
@@ -112,6 +114,13 @@
   --bsr-page-search-clear-hit: calc(var(--bsr-main-width) * 14 / var(--bsr-page-ref));
   --bsr-page-body-pad: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
   --bsr-page-grid-gap: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
+  --bsr-articles-row-pad: calc(var(--bsr-main-width) * 10 / var(--bsr-page-ref));
+  --bsr-articles-row-gap: calc(var(--bsr-main-width) * 10 / var(--bsr-page-ref));
+  /* Row padding + Article Posts row gap + next row padding (Figma: 10 + 10 + 10) */
+  --bsr-articles-between-rows: calc(
+    var(--bsr-articles-row-pad) + var(--bsr-articles-row-gap) + var(--bsr-articles-row-pad)
+  );
+  --bsr-articles-columns: 5;
 
   /* Card proportions (Figma reference frame: 222 × 338, within 1247px page width) */
   --bsr-card-ref: 222;

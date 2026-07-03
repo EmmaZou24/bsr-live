@@ -2,13 +2,17 @@ import defaultCover from '../../../assets/web/blog-cover.jpg'
 import { Tag } from '../shared/Tag'
 import './blog-post.css'
 
+export type BlogPostAccent = 'pink' | 'yellow' | 'blue'
+
 export type BlogPostProps = {
   title?: string
   author?: string
   date?: string
   imageSrc?: string
   imageAlt?: string
-  tags?: string[]
+  coarseTag?: string
+  granularTag?: string
+  accent?: BlogPostAccent
   href?: string
   onAuthorClick?: () => void
   className?: string
@@ -20,11 +24,15 @@ export function BlogPost({
   date = 'July 12th, 2026',
   imageSrc = defaultCover,
   imageAlt = '',
-  tags = ['BLOG', 'COMMUNITY'],
+  coarseTag = 'BLOG',
+  granularTag = 'COMMUNITY',
+  accent = 'pink',
   href,
   onAuthorClick,
   className = '',
 }: BlogPostProps) {
+  const rootClassName = `blog-post blog-post--accent-${accent}${href ? ' blog-post--link' : ''} ${className}`.trim()
+
   const content = (
     <>
       <div className="blog-post__image-wrap">
@@ -49,9 +57,8 @@ export function BlogPost({
         </div>
 
         <div className="blog-post__tags">
-          {tags.map((tag) => (
-            <Tag key={tag} label={tag} variant="filled" tone="pink" />
-          ))}
+          {coarseTag ? <Tag label={coarseTag} variant="filled" tone="pink" /> : null}
+          {granularTag ? <Tag label={granularTag} variant="filled" tone="pink" /> : null}
         </div>
       </div>
     </>
@@ -59,11 +66,11 @@ export function BlogPost({
 
   if (href) {
     return (
-      <a href={href} className={`blog-post blog-post--link ${className}`.trim()}>
+      <a href={href} className={rootClassName}>
         {content}
       </a>
     )
   }
 
-  return <article className={`blog-post ${className}`.trim()}>{content}</article>
+  return <article className={rootClassName}>{content}</article>
 }

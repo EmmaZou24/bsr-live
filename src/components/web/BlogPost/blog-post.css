@@ -28,7 +28,6 @@
 .blog-post__date {
   padding: var(--bsr-card-date-pad-y) var(--bsr-card-date-pad-x);
   background: var(--bsr-black);
-  color: var(--bsr-pink);
   font-family: var(--bsr-font);
   font-size: var(--bsr-card-font-date);
   font-weight: 300;
@@ -44,7 +43,48 @@
   gap: var(--bsr-card-pad);
   min-height: 0;
   padding: var(--bsr-card-pad);
+}
+
+.blog-post__tags .tag {
+  padding: var(--bsr-card-tag-pad-y) var(--bsr-card-tag-pad-x);
+  border-radius: var(--bsr-card-tag-radius);
+  font-size: var(--bsr-card-font-tag);
+}
+
+.blog-post--accent-pink .blog-post__date {
+  color: var(--bsr-pink);
+}
+
+.blog-post--accent-pink .blog-post__body {
   background: var(--bsr-pink);
+}
+
+.blog-post--accent-pink .blog-post__tags .tag--filled {
+  color: var(--bsr-pink);
+}
+
+.blog-post--accent-yellow .blog-post__date {
+  color: var(--bsr-yellow);
+}
+
+.blog-post--accent-yellow .blog-post__body {
+  background: var(--bsr-yellow);
+}
+
+.blog-post--accent-yellow .blog-post__tags .tag--filled {
+  color: var(--bsr-yellow);
+}
+
+.blog-post--accent-blue .blog-post__date {
+  color: var(--bsr-blue);
+}
+
+.blog-post--accent-blue .blog-post__body {
+  background: var(--bsr-blue);
+}
+
+.blog-post--accent-blue .blog-post__tags .tag--filled {
+  color: var(--bsr-blue);
 }
 
 .blog-post__text {
@@ -85,10 +125,4 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--bsr-card-tags-gap);
-}
-
-.blog-post__tags .tag {
-  padding: var(--bsr-card-tag-pad-y) var(--bsr-card-tag-pad-x);
-  border-radius: var(--bsr-card-tag-radius);
-  font-size: var(--bsr-card-font-tag);
 }

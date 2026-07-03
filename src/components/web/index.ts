@@ -16,10 +16,10 @@ export type {
 } from './TitleSearch/PageSearch'
 
 export { BlogPost } from './BlogPost/BlogPost'
-export type { BlogPostProps } from './BlogPost/BlogPost'
+export type { BlogPostProps, BlogPostAccent } from './BlogPost/BlogPost'
 
-export { DjProfile } from './DjProfile/DjProfile'
-export type { DjProfileProps } from './DjProfile/DjProfile'
+export { ShowProfile } from './ShowProfile/ShowProfile'
+export type { ShowProfileProps } from './ShowProfile/ShowProfile'
 
 export { ScrollingBar } from './shared/ScrollingBar'
 export { Tag } from './shared/Tag'

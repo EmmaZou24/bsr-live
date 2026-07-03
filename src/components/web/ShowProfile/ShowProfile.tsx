@@ -1,8 +1,8 @@
 import defaultCover from '../../../assets/web/dj-cover.jpg'
 import { Tag } from '../shared/Tag'
-import './dj-profile.css'
+import './show-profile.css'
 
-export type DjProfileProps = {
+export type ShowProfileProps = {
   showTitle?: string
   hosts?: string
   schedule?: string
@@ -13,7 +13,7 @@ export type DjProfileProps = {
   className?: string
 }
 
-export function DjProfile({
+export function ShowProfile({
   showTitle = "There's Something In Your Ear",
   hosts = 'by Xandi Pink & Allie Heffner',
   schedule = 'Tuesdays @ 7pm',
@@ -22,22 +22,22 @@ export function DjProfile({
   tags = ['ELECTRONIC', 'SOUL'],
   href,
   className = '',
-}: DjProfileProps) {
+}: ShowProfileProps) {
   const content = (
     <>
-      <div className="dj-profile__image-wrap">
-        <img src={imageSrc} alt={imageAlt} className="dj-profile__image" />
+      <div className="show-profile__image-wrap">
+        <img src={imageSrc} alt={imageAlt} className="show-profile__image" />
       </div>
 
-      <div className="dj-profile__schedule">{schedule}</div>
+      <div className="show-profile__schedule">{schedule}</div>
 
-      <div className="dj-profile__body">
-        <div className="dj-profile__text">
-          <h2 className="dj-profile__title">{showTitle}</h2>
-          <p className="dj-profile__hosts">{hosts}</p>
+      <div className="show-profile__body">
+        <div className="show-profile__text">
+          <h2 className="show-profile__title">{showTitle}</h2>
+          <p className="show-profile__hosts">{hosts}</p>
         </div>
 
-        <div className="dj-profile__tags">
+        <div className="show-profile__tags">
           {tags.map((tag) => (
             <Tag key={tag} label={tag} variant="filled" tone="white" />
           ))}
@@ -48,11 +48,11 @@ export function DjProfile({
 
   if (href) {
     return (
-      <a href={href} className={`dj-profile dj-profile--link ${className}`.trim()}>
+      <a href={href} className={`show-profile show-profile--link ${className}`.trim()}>
         {content}
       </a>
     )
   }
 
-  return <article className={`dj-profile ${className}`.trim()}>{content}</article>
+  return <article className={`show-profile ${className}`.trim()}>{content}</article>
 }
