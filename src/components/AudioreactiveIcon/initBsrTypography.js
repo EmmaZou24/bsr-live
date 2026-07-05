@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { Path, Shape, ShapeUtils } from 'three'
 import { SVGLoader } from 'three/addons/loaders/SVGLoader.js'
 import opentype from 'opentype.js'
 import fontUrl from '../../assets/fonts/MNKYMaurice-Bold.otf?url'
@@ -11,6 +12,9 @@ export function initBsrTypography({ container, audioElement, onReady }) {
   let renderer
   let wordGroup = null
   let stacks
+  const wordBlockSize = new THREE.Vector3()
+  const wordBlockCenter = new THREE.Vector3()
+  let hasWordBlockMetrics = false
   let otFont
   let glyphGeometries = {}
   let scale
@@ -19,6 +23,9 @@ export function initBsrTypography({ container, audioElement, onReady }) {
   let FONTSIZE = 1000
 
   const ORTHO_SIZE = 2600
+  const FIRST_PLAY_S_RELEASE = 0.03
+  const FIRST_PLAY_MUSIC_THRESHOLD = 0.12
+  const FIRST_PLAY_SETTLED_S = 0.03
   let strokeWidth = (7 / 500) * FONTSIZE * (1 + (0.01 - FONTSIZE / 50000))
 
   function getContainerSize() {
@@ -34,6 +41,8 @@ export function initBsrTypography({ container, audioElement, onReady }) {
   let audioCtx
   let analyser
   let dataArray
+  let isFirstPlaySmoothing = false
+  let hasCompletedFirstPlaySmooth = false
 
   const PARAMS = {
     global: {
@@ -84,7 +93,6 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     if (disposed) return
 
     scale = FONTSIZE / otFont.unitsPerEm
-    onReady?.()
 
     void (async () => {
       try {
@@ -103,6 +111,8 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     } catch (err) {
       console.error('Failed to initialize typography:', err)
     }
+
+    onReady?.()
   }
 
   bootstrap()
@@ -131,6 +141,8 @@ export function initBsrTypography({ container, audioElement, onReady }) {
   container.appendChild(renderer.domElement)
 
   renderer.setAnimationLoop(() => {
+    syncViewportToContainer()
+
     if (!wordGroup || !stacks) {
       renderer.render(scene, camera)
       return
@@ -155,13 +167,28 @@ export function initBsrTypography({ container, audioElement, onReady }) {
       })
     }
 
+    let maxTargetS = 0
+    let allSmoothNearZero = true
+
     stacks.forEach((stack, i) => {
       const p = PARAMS.letters[i]
       if (!p) return
 
-      const s =
+      const targetS =
         (analyser && PARAMS.audio.audioReactive ? p.styleAmount : styleAmount) *
         PARAMS.global.strength
+
+      maxTargetS = Math.max(maxTargetS, targetS)
+
+      let s
+      if (isFirstPlaySmoothing) {
+        p.smoothS = THREE.MathUtils.lerp(p.smoothS, targetS, FIRST_PLAY_S_RELEASE)
+        s = p.smoothS
+        if (p.smoothS > FIRST_PLAY_SETTLED_S) allSmoothNearZero = false
+      } else {
+        p.smoothS = targetS
+        s = targetS
+      }
 
       stack.group.rotation.x = p.rotX * s
       stack.group.rotation.y = p.rotY * s
@@ -197,6 +224,14 @@ export function initBsrTypography({ container, audioElement, onReady }) {
       })
     })
 
+    if (
+      isFirstPlaySmoothing &&
+      (maxTargetS > FIRST_PLAY_MUSIC_THRESHOLD || allSmoothNearZero)
+    ) {
+      isFirstPlaySmoothing = false
+      hasCompletedFirstPlaySmooth = true
+    }
+
     renderer.render(scene, camera)
   })
 
@@ -204,9 +239,14 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     const graph = getStreamAudioGraph(audioElement)
     if (!graph) return
 
+    const isFirstBind = !analyser
     audioCtx = graph.audioCtx
     analyser = graph.analyser
     dataArray = graph.dataArray
+
+    if (isFirstBind && !hasCompletedFirstPlaySmooth) {
+      isFirstPlaySmoothing = true
+    }
   }
 
   function connectAudio() {
@@ -227,6 +267,7 @@ export function initBsrTypography({ container, audioElement, onReady }) {
           offset: 0,
           audioDepth: 100,
           styleAmount: 1.0,
+          smoothS: 1.0,
         })
       })
   }
@@ -237,16 +278,28 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     buildStacks(word)
   }
 
+  function applySlicePositions() {
+    stacks.forEach((stack, i) => {
+      const p = PARAMS.letters[i]
+      const dist = p.distance ?? 100
+      stack.slices.forEach((slice, j) => {
+        slice.position.z =
+          j * dist - Math.floor((stack.slices.length / 2) * dist) + p.offset * dist
+      })
+    })
+  }
+
   function shuffleValues() {
     stacks.forEach((stack, i) => {
       const p = PARAMS.letters[i]
-      p.rotX = (Math.random() * 2 - 1) * 0.82
-      p.rotY = (Math.random() * 2 - 1) * 0.7
-      p.rotZ = (Math.random() * 2 - 1) * 0.55
+      p.rotX = (Math.random() * 2 - 1) * 0.65
+      p.rotY = (Math.random() * 2 - 1) * 0.55
+      p.rotZ = (Math.random() * 2 - 1) * 0.45
 
-      p.offset = Math.random() * 2 - 1
-      p.distance = Math.random() * 200 + 100
+      p.offset = Math.random() * 1.4 - 0.7
+      p.distance = Math.random() * 140 + 90
       p.slices = Math.floor(Math.random() * 1) + 3
+      p.smoothS = PARAMS.global.strength
 
       const dist = p.distance ?? PARAMS.global.distance
       if (stack.slices.length !== p.slices) {
@@ -268,13 +321,62 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     })
   }
 
+  function cacheWordBlockMetrics() {
+    if (!wordGroup) {
+      hasWordBlockMetrics = false
+      return
+    }
+
+    wordGroup.position.set(0, 0, 0)
+    wordGroup.scale.set(1, 1, 1)
+    wordGroup.updateMatrixWorld(true)
+
+    const box = new THREE.Box3().setFromObject(wordGroup)
+    box.getSize(wordBlockSize)
+    box.getCenter(wordBlockCenter)
+    hasWordBlockMetrics = wordBlockSize.x > 0 && wordBlockSize.y > 0
+  }
+
+  function fitWordGroupToViewport() {
+    if (!wordGroup || !hasWordBlockMetrics) return
+
+    const visibleWidth = ORTHO_SIZE * aspect
+    const visibleHeight = ORTHO_SIZE
+    const padding = 0.9
+    const scaleX = (visibleWidth * padding) / wordBlockSize.x
+    const scaleY = (visibleHeight * padding) / wordBlockSize.y
+    const fit = Math.min(scaleX, scaleY, 1)
+    wordGroup.scale.set(fit, fit, fit)
+    wordGroup.position.set(
+      -wordBlockCenter.x * fit,
+      -wordBlockCenter.y * fit,
+      0,
+    )
+  }
+
+  function syncViewportToContainer() {
+    const size = getContainerSize()
+    if (!size.width || !size.height) return
+    if (size.width === containerWidth && size.height === containerHeight) return
+
+    containerWidth = size.width
+    containerHeight = size.height
+    aspect = containerWidth / containerHeight
+    camera.left = (ORTHO_SIZE * aspect) / -2
+    camera.right = (ORTHO_SIZE * aspect) / 2
+    camera.top = ORTHO_SIZE / 2
+    camera.bottom = ORTHO_SIZE / -2
+    camera.updateProjectionMatrix()
+    renderer.setSize(containerWidth, containerHeight, false)
+    fitWordGroupToViewport()
+  }
+
   function buildStacks(text, autoFit = true) {
     if (wordGroup) {
       scene.remove(wordGroup)
     }
 
     wordGroup = new THREE.Group()
-    wordGroup.scale.y = -1
     scene.add(wordGroup)
 
     const lines = getLines(text)
@@ -287,7 +389,7 @@ export function initBsrTypography({ container, audioElement, onReady }) {
       const lineWidth = lineMetrics.reduce((sum, m) => sum + m.advanceWidth + m.kern, 0)
       let currentX = -lineWidth / 2
       const lineGroup = new THREE.Group()
-      lineGroup.position.y = lineIdx * lineHeight
+      lineGroup.position.y = -lineIdx * lineHeight
       wordGroup.add(lineGroup)
 
       line.split('').forEach((char, charIdx) => {
@@ -310,23 +412,13 @@ export function initBsrTypography({ container, audioElement, onReady }) {
       })
     })
 
-    if (autoFit) {
-      wordGroup.position.set(0, 0, 0)
-      const sizeBox = new THREE.Box3().setFromObject(wordGroup)
-      const size = sizeBox.getSize(new THREE.Vector3())
-      const visibleWidth = ORTHO_SIZE * aspect
-      const visibleHeight = ORTHO_SIZE
-      const padding = 0.9
-      const scaleX = (visibleWidth * padding) / size.x
-      const scaleY = (visibleHeight * padding) / size.y
-      const fit = Math.min(scaleX, scaleY, 1)
-      wordGroup.scale.set(fit, -fit, fit)
-    }
+    cacheWordBlockMetrics()
 
-    const box = new THREE.Box3().setFromObject(wordGroup)
-    const center = box.getCenter(new THREE.Vector3())
-    wordGroup.position.x -= center.x
-    wordGroup.position.y -= center.y
+    if (autoFit) {
+      fitWordGroupToViewport()
+    } else {
+      wordGroup.position.set(-wordBlockCenter.x, -wordBlockCenter.y, 0)
+    }
   }
 
   function buildSlices(char, count) {
@@ -365,6 +457,159 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     return slices
   }
 
+  function opentypePathToSvgPathData(path) {
+    const parts = []
+    for (const cmd of path.commands) {
+      switch (cmd.type) {
+        case 'M':
+          parts.push(`M${cmd.x} ${-cmd.y}`)
+          break
+        case 'L':
+          parts.push(`L${cmd.x} ${-cmd.y}`)
+          break
+        case 'C':
+          parts.push(`C${cmd.x1} ${-cmd.y1} ${cmd.x2} ${-cmd.y2} ${cmd.x} ${-cmd.y}`)
+          break
+        case 'Q':
+          parts.push(`Q${cmd.x1} ${-cmd.y1} ${cmd.x} ${-cmd.y}`)
+          break
+        case 'Z':
+          parts.push('Z')
+          break
+        default:
+          break
+      }
+    }
+    return parts.join(' ')
+  }
+
+  function cloneSubPathToShape(subPath) {
+    const shape = new Shape()
+    for (const curve of subPath.curves) {
+      shape.curves.push(curve.clone())
+    }
+    return shape
+  }
+
+  function cloneSubPathToPath(subPath) {
+    const path = new Path()
+    for (const curve of subPath.curves) {
+      path.curves.push(curve.clone())
+    }
+    return path
+  }
+
+  function ensureContourCCW(path) {
+    const points = path.getPoints(12)
+    if (ShapeUtils.isClockWise(points)) {
+      path.curves.reverse()
+    }
+  }
+
+  function ensureContourCW(path) {
+    const points = path.getPoints(12)
+    if (!ShapeUtils.isClockWise(points)) {
+      path.curves.reverse()
+    }
+  }
+
+  function contourCenter(points) {
+    const center = new THREE.Vector2()
+    for (const point of points) {
+      center.add(point)
+    }
+    return center.divideScalar(points.length)
+  }
+
+  function isPointInPolygon(point, polygon) {
+    let inside = false
+
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const xi = polygon[i].x
+      const yi = polygon[i].y
+      const xj = polygon[j].x
+      const yj = polygon[j].y
+      const intersects =
+        yi > point.y !== yj > point.y &&
+        point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi
+
+      if (intersects) inside = !inside
+    }
+
+    return inside
+  }
+
+  function isContourInside(inner, outer) {
+    const outerBounds = {
+      minX: Math.min(...outer.points.map((p) => p.x)),
+      maxX: Math.max(...outer.points.map((p) => p.x)),
+      minY: Math.min(...outer.points.map((p) => p.y)),
+      maxY: Math.max(...outer.points.map((p) => p.y)),
+    }
+
+    if (
+      inner.center.x < outerBounds.minX ||
+      inner.center.x > outerBounds.maxX ||
+      inner.center.y < outerBounds.minY ||
+      inner.center.y > outerBounds.maxY
+    ) {
+      return false
+    }
+
+    return isPointInPolygon(inner.center, outer.points)
+  }
+
+  function createGlyphShapes(parsedPath) {
+    const { subPaths } = parsedPath
+    if (subPaths.length === 0) return []
+    if (subPaths.length === 1) {
+      const shape = cloneSubPathToShape(subPaths[0])
+      ensureContourCCW(shape)
+      return [shape]
+    }
+
+    const contours = subPaths
+      .map((subPath, index) => {
+        const points = subPath.getPoints(12)
+        return {
+          index,
+          subPath,
+          points,
+          area: Math.abs(ShapeUtils.area(points)),
+          center: contourCenter(points),
+        }
+      })
+      .sort((a, b) => b.area - a.area)
+
+    const used = new Set()
+    const shapes = []
+
+    for (let i = 0; i < contours.length; i++) {
+      if (used.has(i)) continue
+
+      const outer = contours[i]
+      const shape = cloneSubPathToShape(outer.subPath)
+      ensureContourCCW(shape)
+
+      for (let j = i + 1; j < contours.length; j++) {
+        if (used.has(j)) continue
+
+        const inner = contours[j]
+        if (!isContourInside(inner, outer)) continue
+
+        const hole = cloneSubPathToPath(inner.subPath)
+        ensureContourCW(hole)
+        shape.holes.push(hole)
+        used.add(j)
+      }
+
+      shapes.push(shape)
+      used.add(i)
+    }
+
+    return shapes
+  }
+
   function buildGeometries(text) {
     const loader = new SVGLoader()
     const chars = [...new Set(getAllChars(text))]
@@ -376,9 +621,9 @@ export function initBsrTypography({ container, audioElement, onReady }) {
       const cy = -xHeight / 2
 
       const path = glyph.getPath(-cx, -cy, FONTSIZE)
-      const parsed = loader.parse(`<svg><path d="${path.toPathData()}"/></svg>`)
+      const parsed = loader.parse(`<svg><path d="${opentypePathToSvgPathData(path)}"/></svg>`)
 
-      const shapes = parsed.paths.flatMap((p) => SVGLoader.createShapes(p))
+      const shapes = parsed.paths.flatMap((p) => createGlyphShapes(p))
       const geometry = new THREE.ShapeGeometry(shapes)
 
       const strokePoints = []
@@ -472,14 +717,14 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     buildGeometries(wordSet)
     rebuildLetters(wordSet)
 
+    shuffleValues()
+
     if (preset.letters?.length) {
       preset.letters.forEach((letter, i) => {
         if (PARAMS.letters[i]) Object.assign(PARAMS.letters[i], letter)
       })
-    } else {
-      shuffleValues()
+      applySlicePositions()
     }
-
     scene.background = new THREE.Color(PARAMS.global.backgroundColor)
     updateColors()
     syncAudioIntegration()
@@ -491,23 +736,13 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     if (resizeRaf) cancelAnimationFrame(resizeRaf)
     resizeRaf = requestAnimationFrame(() => {
       resizeRaf = 0
-      const size = getContainerSize()
-      if (!size.width || !size.height) return
-      containerWidth = size.width
-      containerHeight = size.height
-      aspect = containerWidth / containerHeight
-      camera.left = (ORTHO_SIZE * aspect) / -2
-      camera.right = (ORTHO_SIZE * aspect) / 2
-      camera.top = ORTHO_SIZE / 2
-      camera.bottom = ORTHO_SIZE / -2
-      camera.updateProjectionMatrix()
-      renderer.setSize(containerWidth, containerHeight, false)
+      syncViewportToContainer()
     })
   }
 
   const resizeObserver = new ResizeObserver(onResize)
   resizeObserver.observe(container)
-  onResize()
+  syncViewportToContainer()
 
   return {
     dispose() {

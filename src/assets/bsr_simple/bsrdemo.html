@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSR Demo</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="opentype.min.js"></script>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/",
+        "tweakpane": "https://cdn.jsdelivr.net/npm/tweakpane@4.0.5/+esm"
+      }
+    }
+</script>
+  </head>
+
+  <body>
+   <div id="loading">Loading...</div>
+   <!-- TESTING: local song. Swap back to https://listen.bsrlive.com/bsrmp3 for the live stream. -->
+   <audio id="audio" src="/songs/Go_Ladies.mp3" crossorigin="anonymous" autoplay preload="auto"></audio>
+   <script type="module" src="bsrdemo.js"></script>
+ 
+  </body>
+</html>

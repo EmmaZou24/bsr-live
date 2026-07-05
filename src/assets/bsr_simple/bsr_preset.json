@@ -1,0 +1,20 @@
+{
+  "wordSet": "brown\nstudent\nradio",
+  "global": {
+    "backgroundColor": "#FFFFFF",
+    "word": "brown\nstudent\nradio",
+    "fillColor": "#000000",
+    "secondaryFillColor": "#ff0a4f",
+    "strokeColor": "#000000",
+    "showStroke": true,
+    "fontSize": 800,
+    "strength": 1,
+    "leading": 0.85
+  },
+  "audio": {
+    "audioReactive": false,
+    "styleIntensity": 1.3,
+    "depthIntensity": 300,
+    "minStyle": 0.9 
+  }
+}

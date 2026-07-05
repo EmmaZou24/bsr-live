@@ -28,6 +28,7 @@
   flex: none;
   height: var(--bsr-screen-height);
   overflow: hidden;
+  transition: width var(--bsr-layout-transition);
 }
 
 .page-shell--push.page-shell--expanded .page-shell__content {

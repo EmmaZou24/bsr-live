@@ -1,13 +1,7 @@
 .audioreactive-icon {
   position: relative;
-  width: var(--bsr-main-width);
+  width: 100%;
   height: 100%;
-  transform: translateX(0);
-  transition: transform var(--bsr-layout-transition);
-}
-
-.page-shell--push.page-shell--expanded .audioreactive-icon {
-  transform: translateX(calc((var(--bsr-main-width-expanded) - var(--bsr-main-width)) / 2));
 }
 
 .audioreactive-icon__stage {

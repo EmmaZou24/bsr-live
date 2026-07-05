@@ -30,8 +30,9 @@ export function AudioreactiveIcon() {
 
   useEffect(() => {
     if (loading) return
-    // Bind the analyser when the stream graph exists (after first play).
-    // Stay bound while paused so frequency data can decay like the demo.
+    // Bind only after the stream graph exists (first play). While paused, keep
+    // the analyser bound so frequency data can decay — but do not create the
+    // graph on idle load, or silent bins force s → 0 and hide the shuffle.
     connectAudioRef.current?.()
   }, [isPlaying, loading])
 
