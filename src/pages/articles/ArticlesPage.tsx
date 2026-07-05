@@ -4,12 +4,12 @@ import {
   PageSearch,
   type PageSearchFilterCategory,
   type PageSearchSelection,
-} from '../components/web'
-import { fetchArticles } from '../lib/sanity/articles'
-import { getArticleTags } from '../lib/sanity/mapArticle'
-import type { ArticleCard } from '../lib/sanity/types'
-import { NavPage } from './NavPage'
-import './nav-page.css'
+} from '../../components/web'
+import { fetchArticles } from '../../lib/sanity/articles'
+import { getArticleTags } from '../../lib/sanity/mapArticle'
+import type { ArticleCard } from '../../lib/sanity/types'
+import { NavPage } from '../NavPage'
+import '../nav-page.css'
 
 const articleFilterCategories: PageSearchFilterCategory[] = [
   {

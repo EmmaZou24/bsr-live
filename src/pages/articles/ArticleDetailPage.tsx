@@ -1,13 +1,13 @@
 import { PortableText } from '@portabletext/react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Tag } from '../components/web'
-import { fetchArticleBySlug } from '../lib/sanity/articles'
-import type { ArticleDetail } from '../lib/sanity/types'
-import { NavPage } from './NavPage'
-import { ROUTES } from './routes'
+import { Tag } from '../../components/web'
+import { fetchArticleBySlug } from '../../lib/sanity/articles'
+import type { ArticleDetail } from '../../lib/sanity/types'
+import { NavPage } from '../NavPage'
+import { ROUTES } from '../routes'
 import './article-detail.css'
-import './nav-page.css'
+import '../nav-page.css'
 
 export function ArticleDetailPage() {
   const { slug } = useParams<{ slug: string }>()

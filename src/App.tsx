@@ -1,12 +1,12 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { LiveStreamProvider } from './context/LiveStreamContext'
 import { AppLayout } from './pages/AppLayout'
-import { ArticleDetailPage } from './pages/ArticleDetailPage'
-import { ArticlesPage } from './pages/ArticlesPage'
-import { HomePage } from './pages/HomePage'
-import { SchedulePage } from './pages/SchedulePage'
-import { ShowDetailPage } from './pages/ShowDetailPage'
-import { ShowsPage } from './pages/ShowsPage'
+import { ArticleDetailPage } from './pages/articles/ArticleDetailPage'
+import { ArticlesPage } from './pages/articles/ArticlesPage'
+import { HomePage } from './pages/home/HomePage'
+import { SchedulePage } from './pages/schedule/SchedulePage'
+import { ShowDetailPage } from './pages/shows/ShowDetailPage'
+import { ShowsPage } from './pages/shows/ShowsPage'
 
 export function App() {
   return (

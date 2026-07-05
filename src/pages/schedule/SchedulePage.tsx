@@ -1,5 +1,5 @@
-import { NavPage } from './NavPage'
-import './nav-page.css'
+import { NavPage } from '../NavPage'
+import '../nav-page.css'
 
 export function SchedulePage() {
   return (

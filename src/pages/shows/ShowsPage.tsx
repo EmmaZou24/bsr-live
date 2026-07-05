@@ -4,11 +4,11 @@ import {
   PageSearch,
   type PageSearchFilterCategory,
   type PageSearchSelection,
-} from '../components/web'
-import { fetchShows } from '../lib/sanity/shows'
-import type { ShowCard } from '../lib/sanity/types'
-import { NavPage } from './NavPage'
-import './nav-page.css'
+} from '../../components/web'
+import { fetchShows } from '../../lib/sanity/shows'
+import type { ShowCard } from '../../lib/sanity/types'
+import { NavPage } from '../NavPage'
+import '../nav-page.css'
 
 const showFilterCategories: PageSearchFilterCategory[] = [
   {

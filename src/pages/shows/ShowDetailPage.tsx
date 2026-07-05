@@ -1,12 +1,12 @@
 import { PortableText } from '@portabletext/react'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { Tag } from '../components/web'
-import { fetchShowBySlug } from '../lib/sanity/shows'
-import type { ShowDetail } from '../lib/sanity/types'
-import { NavPage } from './NavPage'
-import { ROUTES } from './routes'
-import './nav-page.css'
+import { Tag } from '../../components/web'
+import { fetchShowBySlug } from '../../lib/sanity/shows'
+import type { ShowDetail } from '../../lib/sanity/types'
+import { NavPage } from '../NavPage'
+import { ROUTES } from '../routes'
+import '../nav-page.css'
 import './show-detail.css'
 
 export function ShowDetailPage() {
