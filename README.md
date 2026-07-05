@@ -5,26 +5,23 @@
 ### Overall
 - Accessibility
 - Responsiveness to page zoom in/out
-- Get font files
-- Make filters/tags in Search work, and figure out search functionality (what kind of search? how to connect with post/show cards?)
+- Sanity GROQ queries for search
+- Figure out CMS and archiving
 
 ### Main Page
-- Setup navigation from subpages to main page
 - Chat
 
 ### Schedule
 - Spinitron spinitron spinitron
-- Header component
 
 ### Articles
-- Header component
-- Articles card component
-- Figure out CMS; how does it interact with the subpage system?
+- Details page
 
 ### Shows
-- Header component
-- Articles card component
-- Figure out if CMS is appropriate here; is it possible to just drop a CSV into the codebase instead?
+- Details page
+
+### DJ Profiles
+- Create a component
 
 ## Setup / Config
 
