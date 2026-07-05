@@ -1,0 +1,121 @@
+.article-detail__status {
+  margin: 0;
+  padding: var(--bsr-page-body-pad);
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-card-font-author);
+  font-weight: 500;
+}
+
+.article-detail__status--error {
+  color: var(--bsr-black);
+}
+
+.article-detail {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--bsr-page-body-pad);
+  box-sizing: border-box;
+}
+
+.article-detail__back {
+  display: inline-block;
+  margin-bottom: var(--bsr-card-pad);
+  color: var(--bsr-black);
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-card-font-author);
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.article-detail__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bsr-card-pad);
+}
+
+.article-detail__hero {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: var(--bsr-border);
+}
+
+.article-detail__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bsr-card-tags-gap);
+}
+
+.article-detail__date {
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-card-font-date);
+  font-weight: 300;
+}
+
+.article-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--bsr-card-tags-gap);
+}
+
+.article-detail__title {
+  margin: 0;
+  font-family: var(--bsr-font);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.article-detail__author {
+  margin: 0;
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-card-font-author);
+  font-weight: 500;
+}
+
+.article-detail__body {
+  font-family: var(--bsr-font);
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+
+.article-detail__body p {
+  margin: 0 0 1em;
+}
+
+.article-detail__body p:last-child {
+  margin-bottom: 0;
+}
+
+.article-detail__body h2,
+.article-detail__body h3 {
+  margin: 1.5em 0 0.5em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.article-detail__body a {
+  color: inherit;
+}
+
+.article-detail__body blockquote {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: var(--bsr-border);
+}
+
+.article-detail__body ul,
+.article-detail__body ol {
+  margin: 0 0 1em;
+  padding-left: 1.25em;
+}

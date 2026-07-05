@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import defaultCover from '../../../assets/web/blog-cover.jpg'
 import { Tag } from '../shared/Tag'
 import './blog-post.css'
@@ -78,9 +79,9 @@ export function BlogPost({
 
   if (href) {
     return (
-      <a href={href} className={rootClassName}>
+      <Link to={href} className={rootClassName}>
         {content}
-      </a>
+      </Link>
     )
   }
 

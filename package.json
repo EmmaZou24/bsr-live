@@ -16,6 +16,9 @@
     "vite": "^8.0.1"
   },
   "dependencies": {
+    "@portabletext/react": "^6.2.0",
+    "@sanity/client": "^7.23.0",
+    "@sanity/image-url": "^2.1.1",
     "opentype.js": "^2.0.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

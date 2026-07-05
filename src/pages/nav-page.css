@@ -35,3 +35,27 @@
   width: 100%;
   box-sizing: border-box;
 }
+
+.articles-page__status {
+  margin: 0;
+  padding: 0 var(--bsr-page-body-pad) var(--bsr-page-body-pad);
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-card-font-author);
+  font-weight: 500;
+}
+
+.articles-page__status--error {
+  color: var(--bsr-black);
+}
+
+.shows-page__status {
+  margin: 0;
+  padding: 0 var(--bsr-page-body-pad) var(--bsr-page-body-pad);
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-card-font-author);
+  font-weight: 500;
+}
+
+.shows-page__status--error {
+  color: var(--bsr-black);
+}

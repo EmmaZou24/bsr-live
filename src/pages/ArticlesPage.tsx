@@ -1,87 +1,15 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   BlogPost,
   PageSearch,
   type PageSearchFilterCategory,
   type PageSearchSelection,
 } from '../components/web'
-import blogCover from '../assets/web/blog-cover.jpg'
+import { fetchArticles } from '../lib/sanity/articles'
+import { getArticleTags } from '../lib/sanity/mapArticle'
+import type { ArticleCard } from '../lib/sanity/types'
 import { NavPage } from './NavPage'
 import './nav-page.css'
-
-type MockArticle = {
-  id: string
-  title: string
-  author: string
-  date: string
-  coarseTag: string
-  granularTag?: string
-  imageAlt: string
-}
-
-const mockArticles: MockArticle[] = [
-  {
-    id: 'ri-music-scene',
-    title: 'Where Did The Rhode Island Music Scene Go?',
-    author: 'millie cheng',
-    date: 'July 12th, 2026',
-    coarseTag: 'BLOG',
-    granularTag: 'COMMUNITY',
-    imageAlt: 'Chicken coop at a Rhode Island farm',
-  },
-  {
-    id: 'campus-radio-history',
-    title: 'Where Did The Rhode Island Music Scene Go?',
-    author: 'millie cheng',
-    date: 'July 12th, 2026',
-    coarseTag: 'NEWS',
-    imageAlt: 'Chicken coop at a Rhode Island farm',
-  },
-  {
-    id: 'dj-spotlight',
-    title: 'Where Did The Rhode Island Music Scene Go?',
-    author: 'millie cheng',
-    date: 'July 12th, 2026',
-    coarseTag: 'INTERVIEWS',
-    imageAlt: 'Chicken coop at a Rhode Island farm',
-  },
-  {
-    id: 'freeform-manifesto',
-    title: 'Why Freeform Radio Still Matters in 2026',
-    author: 'seigbhlem',
-    date: 'June 28th, 2026',
-    coarseTag: 'BLOG',
-    granularTag: 'COMMUNITY',
-    imageAlt: 'Microphone in the BSR studio',
-  },
-  {
-    id: 'summer-playlist',
-    title: 'A Providence Summer Listening Guide',
-    author: 'kosher music',
-    date: 'June 19th, 2026',
-    coarseTag: 'BLOG',
-    granularTag: 'LISTENING GUIDE',
-    imageAlt: 'Stack of vinyl records',
-  },
-  {
-    id: 'local-label-review',
-    title: 'Review: New Releases from Foxy Records',
-    author: 'millie cheng',
-    date: 'June 3rd, 2026',
-    coarseTag: 'BLOG',
-    granularTag: 'REVIEW',
-    imageAlt: 'Album artwork on a turntable',
-  },
-  {
-    id: 'warehouse-show-recap',
-    title: 'Last Night at the Warehouse: Scene Report',
-    author: 'hauntology of the phlegm',
-    date: 'May 22nd, 2026',
-    coarseTag: 'NEWS',
-    granularTag: 'COMMUNITY',
-    imageAlt: 'Crowd at a local show',
-  },
-]
 
 const articleFilterCategories: PageSearchFilterCategory[] = [
   {
@@ -121,20 +49,54 @@ function getSelectedFilterLabels(
   })
 }
 
-function getArticleTags(article: MockArticle): string[] {
-  return [article.coarseTag, article.granularTag].filter((tag): tag is string => Boolean(tag))
-}
-
-function articleMatchesFilters(article: MockArticle, filterLabels: string[]): boolean {
+function articleMatchesFilters(article: ArticleCard, filterLabels: string[]): boolean {
   if (filterLabels.length === 0) return true
 
   const tagSet = new Set(getArticleTags(article))
   return filterLabels.every((label) => tagSet.has(label))
 }
 
+function articleMatchesSearch(article: ArticleCard, query: string): boolean {
+  const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  if (tokens.length === 0) return true
+
+  const haystack = [article.title, article.author, article.coarseTag, article.granularTag ?? '']
+    .join(' ')
+    .toLowerCase()
+
+  return tokens.every((token) => haystack.includes(token))
+}
+
 export function ArticlesPage() {
+  const [articles, setArticles] = useState<ArticleCard[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedFilters, setSelectedFilters] = useState<PageSearchSelection>({})
-  const [, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+
+    setIsLoading(true)
+    setError(null)
+
+    fetchArticles()
+      .then((data) => {
+        if (!cancelled) setArticles(data)
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load articles')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const handleFilterChange = (categoryId: string, selectedIds: string[]) => {
     setSelectedFilters((current) => ({ ...current, [categoryId]: selectedIds }))
@@ -142,8 +104,12 @@ export function ArticlesPage() {
 
   const visibleArticles = useMemo(() => {
     const filterLabels = getSelectedFilterLabels(articleFilterCategories, selectedFilters)
-    return mockArticles.filter((article) => articleMatchesFilters(article, filterLabels))
-  }, [selectedFilters])
+
+    return articles.filter(
+      (article) =>
+        articleMatchesFilters(article, filterLabels) && articleMatchesSearch(article, searchQuery),
+    )
+  }, [articles, selectedFilters, searchQuery])
 
   return (
     <NavPage
@@ -158,6 +124,11 @@ export function ArticlesPage() {
         />
       }
     >
+      {isLoading ? <p className="articles-page__status">Loading articles…</p> : null}
+      {error ? <p className="articles-page__status articles-page__status--error">{error}</p> : null}
+      {!isLoading && !error && visibleArticles.length === 0 ? (
+        <p className="articles-page__status">No articles found.</p>
+      ) : null}
       <div className="articles-page__grid">
         {visibleArticles.map((article) => (
           <BlogPost
@@ -165,10 +136,11 @@ export function ArticlesPage() {
             title={article.title}
             author={article.author}
             date={article.date}
-            imageSrc={blogCover}
+            imageSrc={article.imageSrc}
             imageAlt={article.imageAlt}
             coarseTag={article.coarseTag}
             granularTag={article.granularTag}
+            href={article.href}
           />
         ))}
       </div>

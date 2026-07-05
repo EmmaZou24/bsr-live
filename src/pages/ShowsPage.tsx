@@ -1,81 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   ShowProfile,
   PageSearch,
   type PageSearchFilterCategory,
   type PageSearchSelection,
 } from '../components/web'
-import djCover from '../assets/web/dj-cover.jpg'
+import { fetchShows } from '../lib/sanity/shows'
+import type { ShowCard } from '../lib/sanity/types'
 import { NavPage } from './NavPage'
 import './nav-page.css'
-
-type MockShow = {
-  id: string
-  showTitle: string
-  hosts: string
-  schedule: string
-  tags: string[]
-  imageAlt: string
-}
-
-const mockShows: MockShow[] = [
-  {
-    id: 'something-in-your-ear',
-    showTitle: "There's Something In Your Ear",
-    hosts: 'by Xandi Pink & Allie Heffner',
-    schedule: 'Tuesdays @ 7pm',
-    tags: ['ELECTRONIC', 'SOUL'],
-    imageAlt: 'DJ portrait in the studio',
-  },
-  {
-    id: 'hauntology-phlegm',
-    showTitle: 'Hauntology of the Phlegm',
-    hosts: 'by seigbhlem',
-    schedule: 'Wednesdays @ 9pm',
-    tags: ['TALK', 'ELECTRONIC'],
-    imageAlt: 'Host at the mic',
-  },
-  {
-    id: 'kosher-music',
-    showTitle: 'Kosher Music',
-    hosts: 'by kosher music',
-    schedule: 'Thursdays @ 6pm',
-    tags: ['INDIE', 'SOUL'],
-    imageAlt: 'Vinyl records and headphones',
-  },
-  {
-    id: 'late-night-rave',
-    showTitle: 'Basement Frequency',
-    hosts: 'by DJ Lumen',
-    schedule: 'Fridays @ 11pm',
-    tags: ['RAVE', 'ELECTRONIC'],
-    imageAlt: 'Club lighting setup',
-  },
-  {
-    id: 'hip-hop-hour',
-    showTitle: 'Providence Cypher',
-    hosts: 'by MC North & DJ Crate',
-    schedule: 'Saturdays @ 4pm',
-    tags: ['HIP HOP', 'SOUL'],
-    imageAlt: 'Turntables and microphone',
-  },
-  {
-    id: 'reggae-garden',
-    showTitle: 'Island Time',
-    hosts: 'by Ras Irie',
-    schedule: 'Sundays @ 2pm',
-    tags: ['REGGAE', 'INDIE'],
-    imageAlt: 'Reggae show poster art',
-  },
-  {
-    id: 'comedy-on-air',
-    showTitle: 'Dead Air Society',
-    hosts: 'by The Bit Brigade',
-    schedule: 'Mondays @ 8pm',
-    tags: ['COMEDY', 'TALK'],
-    imageAlt: 'Comedy radio hosts laughing',
-  },
-]
 
 const showFilterCategories: PageSearchFilterCategory[] = [
   {
@@ -108,16 +41,52 @@ function getSelectedFilterLabels(
   })
 }
 
-function showMatchesFilters(show: MockShow, filterLabels: string[]): boolean {
+function showMatchesFilters(show: ShowCard, filterLabels: string[]): boolean {
   if (filterLabels.length === 0) return true
 
   const tagSet = new Set(show.tags)
   return filterLabels.every((label) => tagSet.has(label))
 }
 
+function showMatchesSearch(show: ShowCard, query: string): boolean {
+  const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean)
+  if (tokens.length === 0) return true
+
+  const haystack = [show.showTitle, show.hosts, show.schedule, ...show.tags].join(' ').toLowerCase()
+
+  return tokens.every((token) => haystack.includes(token))
+}
+
 export function ShowsPage() {
+  const [shows, setShows] = useState<ShowCard[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedFilters, setSelectedFilters] = useState<PageSearchSelection>({})
-  const [, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+
+    setIsLoading(true)
+    setError(null)
+
+    fetchShows()
+      .then((data) => {
+        if (!cancelled) setShows(data)
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load shows')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const handleFilterChange = (categoryId: string, selectedIds: string[]) => {
     setSelectedFilters((current) => ({ ...current, [categoryId]: selectedIds }))
@@ -125,8 +94,11 @@ export function ShowsPage() {
 
   const visibleShows = useMemo(() => {
     const filterLabels = getSelectedFilterLabels(showFilterCategories, selectedFilters)
-    return mockShows.filter((show) => showMatchesFilters(show, filterLabels))
-  }, [selectedFilters])
+
+    return shows.filter(
+      (show) => showMatchesFilters(show, filterLabels) && showMatchesSearch(show, searchQuery),
+    )
+  }, [shows, selectedFilters, searchQuery])
 
   return (
     <NavPage
@@ -141,6 +113,11 @@ export function ShowsPage() {
         />
       }
     >
+      {isLoading ? <p className="shows-page__status">Loading shows…</p> : null}
+      {error ? <p className="shows-page__status shows-page__status--error">{error}</p> : null}
+      {!isLoading && !error && visibleShows.length === 0 ? (
+        <p className="shows-page__status">No shows found.</p>
+      ) : null}
       <div className="shows-page__grid">
         {visibleShows.map((show) => (
           <ShowProfile
@@ -148,9 +125,10 @@ export function ShowsPage() {
             showTitle={show.showTitle}
             hosts={show.hosts}
             schedule={show.schedule}
-            imageSrc={djCover}
+            imageSrc={show.imageSrc}
             imageAlt={show.imageAlt}
             tags={show.tags}
+            href={show.href}
           />
         ))}
       </div>

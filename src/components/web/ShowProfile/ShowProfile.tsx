@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import defaultCover from '../../../assets/web/dj-cover.jpg'
 import { Tag } from '../shared/Tag'
 import './show-profile.css'
@@ -48,9 +49,9 @@ export function ShowProfile({
 
   if (href) {
     return (
-      <a href={href} className={`show-profile show-profile--link ${className}`.trim()}>
+      <Link to={href} className={`show-profile show-profile--link ${className}`.trim()}>
         {content}
-      </a>
+      </Link>
     )
   }
 
