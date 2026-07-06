@@ -7,6 +7,7 @@ import { Tag } from '../../components/web'
 import { fetchArticleBySlug } from '../../lib/sanity/articles'
 import type { ArticleDetail } from '../../lib/sanity/types'
 import { NavPage } from '../NavPage'
+import { useContentLoading } from '../ContentLoadingContext'
 import { ROUTES } from '../routes'
 import { useArticleDetailScrollbar } from './useArticleDetailScrollbar'
 import { NewsAudioPlayer } from './NewsAudioPlayer'
@@ -192,6 +193,8 @@ export function ArticleDetailPage() {
     }
   }, [slug])
 
+  useContentLoading(isLoading)
+
   const thumbTravel =
     metrics.trackHeight - metrics.thumbHeight - metrics.insetTop - metrics.insetBottom
   const scrollPercent =
@@ -201,7 +204,6 @@ export function ArticleDetailPage() {
 
   return (
     <NavPage hideTitle className="nav-page--article-detail" bodyRef={scrollRef}>
-      {isLoading ? <p className="article-detail__status">Loading article…</p> : null}
       {error ? <p className="article-detail__status article-detail__status--error">{error}</p> : null}
 
       {article ? (

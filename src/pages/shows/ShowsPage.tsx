@@ -103,6 +103,7 @@ export function ShowsPage() {
   return (
     <NavPage
       title="shows"
+      isLoading={isLoading}
       className="nav-page--shows"
       search={
         <PageSearch
@@ -113,7 +114,6 @@ export function ShowsPage() {
         />
       }
     >
-      {isLoading ? <p className="shows-page__status">Loading shows…</p> : null}
       {error ? <p className="shows-page__status shows-page__status--error">{error}</p> : null}
       {!isLoading && !error && visibleShows.length === 0 ? (
         <p className="shows-page__status">No shows found.</p>

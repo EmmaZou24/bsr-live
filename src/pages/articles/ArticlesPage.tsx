@@ -114,6 +114,7 @@ export function ArticlesPage() {
   return (
     <NavPage
       title="articles"
+      isLoading={isLoading}
       className="nav-page--articles"
       search={
         <PageSearch
@@ -124,7 +125,6 @@ export function ArticlesPage() {
         />
       }
     >
-      {isLoading ? <p className="articles-page__status">Loading articles…</p> : null}
       {error ? <p className="articles-page__status articles-page__status--error">{error}</p> : null}
       {!isLoading && !error && visibleArticles.length === 0 ? (
         <p className="articles-page__status">No articles found.</p>

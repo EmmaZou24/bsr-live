@@ -5,6 +5,7 @@ import { Tag } from '../../components/web'
 import { fetchShowBySlug } from '../../lib/sanity/shows'
 import type { ShowDetail } from '../../lib/sanity/types'
 import { NavPage } from '../NavPage'
+import { useContentLoading } from '../ContentLoadingContext'
 import { ROUTES } from '../routes'
 import '../nav-page.css'
 import './show-detail.css'
@@ -50,6 +51,8 @@ export function ShowDetailPage() {
     }
   }, [slug])
 
+  useContentLoading(isLoading)
+
   return (
     <NavPage title="shows" className="nav-page--show-detail">
       <div className="show-detail">
@@ -57,7 +60,6 @@ export function ShowDetailPage() {
           ← all shows
         </Link>
 
-        {isLoading ? <p className="show-detail__status">Loading show…</p> : null}
         {error ? <p className="show-detail__status show-detail__status--error">{error}</p> : null}
 
         {show ? (
