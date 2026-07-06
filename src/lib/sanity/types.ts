@@ -1,10 +1,12 @@
 import type {PortableTextBlock} from '@portabletext/react'
 
+export type ArticleKind = 'blog' | 'news' | 'interview'
+
 export type SanitySlug = {
   current: string
 }
 
-export type SanityCoverImage = {
+export type SanityImage = {
   alt?: string
   asset?: {
     _ref: string
@@ -14,21 +16,31 @@ export type SanityCoverImage = {
 
 export type SanityArticleListItem = {
   _id: string
+  _type: ArticleKind
   title: string
   author: string
   publishedAt: string
-  coarseTag: string
   granularTag?: string
   slug: SanitySlug
-  coverImage?: SanityCoverImage
+  coverImage?: SanityImage
 }
 
 export type SanityArticleDetail = SanityArticleListItem & {
+  articleImages?: SanityImage[]
   body?: PortableTextBlock[]
+  description?: PortableTextBlock[]
+  transcript?: PortableTextBlock[]
+  interviewLink?: string
+  audioFile?: {
+    asset?: {
+      url?: string
+    }
+  }
 }
 
 export type ArticleCard = {
   id: string
+  kind: ArticleKind
   title: string
   author: string
   date: string
@@ -40,8 +52,18 @@ export type ArticleCard = {
   href: string
 }
 
+export type ArticleImage = {
+  src: string
+  alt: string
+}
+
 export type ArticleDetail = ArticleCard & {
+  articleImages: ArticleImage[]
   body: PortableTextBlock[]
+  description: PortableTextBlock[]
+  transcript: PortableTextBlock[]
+  interviewLink?: string
+  audioFileUrl?: string
 }
 
 export type SanityShowListItem = {
@@ -51,7 +73,7 @@ export type SanityShowListItem = {
   schedule: string
   tags: string[]
   slug: SanitySlug
-  coverImage?: SanityCoverImage
+  coverImage?: SanityImage
 }
 
 export type SanityShowDetail = SanityShowListItem & {

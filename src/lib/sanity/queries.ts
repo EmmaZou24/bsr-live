@@ -1,33 +1,43 @@
-export const ARTICLES_LIST_QUERY = `
-  *[_type == "article"] | order(publishedAt desc) {
-    _id,
-    title,
-    author,
-    publishedAt,
-    coarseTag,
-    granularTag,
-    slug,
-    coverImage {
-      alt,
-      asset
+const articleListProjection = `
+  _id,
+  _type,
+  title,
+  author,
+  publishedAt,
+  granularTag,
+  slug,
+  coverImage {
+    alt,
+    asset
+  }
+`
+
+const articleDetailProjection = `
+  ${articleListProjection},
+  articleImages[] {
+    alt,
+    asset
+  },
+  body,
+  description,
+  transcript,
+  interviewLink,
+  audioFile {
+    asset-> {
+      url
     }
   }
 `
 
+export const ARTICLES_LIST_QUERY = `
+  *[_type in ["blog", "news", "interview"]] | order(publishedAt desc) {
+    ${articleListProjection}
+  }
+`
+
 export const ARTICLE_BY_SLUG_QUERY = `
-  *[_type == "article" && slug.current == $slug][0] {
-    _id,
-    title,
-    author,
-    publishedAt,
-    coarseTag,
-    granularTag,
-    slug,
-    coverImage {
-      alt,
-      asset
-    },
-    body
+  *[_type in ["blog", "news", "interview"] && slug.current == $slug][0] {
+    ${articleDetailProjection}
   }
 `
 

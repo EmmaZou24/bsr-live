@@ -1,5 +1,6 @@
 import scrollbarHandle from '../../assets/web/article-scrollbar-handle.svg'
-import { PortableText } from '@portabletext/react'
+import { PortableText, type PortableTextBlockComponent } from '@portabletext/react'
+import type { PortableTextBlock } from '@portabletext/types'
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Tag } from '../../components/web'
@@ -8,6 +9,7 @@ import type { ArticleDetail } from '../../lib/sanity/types'
 import { NavPage } from '../NavPage'
 import { ROUTES } from '../routes'
 import { useArticleDetailScrollbar } from './useArticleDetailScrollbar'
+import { NewsAudioPlayer } from './NewsAudioPlayer'
 import './article-detail.css'
 import '../nav-page.css'
 
@@ -24,6 +26,119 @@ function BackArrowIcon() {
         strokeLinecap="round"
       />
     </svg>
+  )
+}
+
+const collageSlots = [
+  {
+    figureClass: 'article-detail__figure--wide',
+    imageClass: 'article-detail__image--wide',
+    decorative: false,
+  },
+  {
+    figureClass: 'article-detail__figure--tall-right',
+    imageClass: 'article-detail__image--tall-right',
+    decorative: true,
+  },
+  {
+    figureClass: 'article-detail__figure--small-left',
+    imageClass: 'article-detail__image--small-left',
+    decorative: true,
+  },
+] as const
+
+function collageImageAt(images: ArticleDetail['articleImages'], index: number) {
+  return images[index] ?? images[0]
+}
+
+function InterviewWatchLink({ href }: { href: string }) {
+  return (
+    <>
+      {' '}
+      <a className="article-detail__interview-link" href={href} target="_blank" rel="noreferrer">
+        Watch the interview here.
+      </a>
+    </>
+  )
+}
+
+function blockRenderer(
+  Tag: 'p' | 'h2' | 'h3' | 'blockquote',
+  interviewLink: string | undefined,
+  lastBlockKey: string | undefined,
+): PortableTextBlockComponent {
+  return function Block({ children, value }) {
+    const showLink = Boolean(interviewLink && value._key === lastBlockKey)
+
+    if (Tag === 'p') {
+      return (
+        <p>
+          {children}
+          {showLink && interviewLink ? <InterviewWatchLink href={interviewLink} /> : null}
+        </p>
+      )
+    }
+
+    if (Tag === 'blockquote') {
+      return (
+        <blockquote>
+          {children}
+          {showLink && interviewLink ? <InterviewWatchLink href={interviewLink} /> : null}
+        </blockquote>
+      )
+    }
+
+    return (
+      <Tag>
+        {children}
+        {showLink && interviewLink ? <InterviewWatchLink href={interviewLink} /> : null}
+      </Tag>
+    )
+  }
+}
+
+function InterviewDescription({
+  description,
+  interviewLink,
+}: {
+  description: PortableTextBlock[]
+  interviewLink?: string
+}) {
+  const lastBlockKey = description.at(-1)?._key
+
+  if (description.length === 0) {
+    if (!interviewLink) return null
+
+    return (
+      <div className="article-detail__body">
+        <p>
+          <a
+            className="article-detail__interview-link"
+            href={interviewLink}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Watch the interview here.
+          </a>
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="article-detail__body">
+      <PortableText
+        value={description}
+        components={{
+          block: {
+            normal: blockRenderer('p', interviewLink, lastBlockKey),
+            h2: blockRenderer('h2', interviewLink, lastBlockKey),
+            h3: blockRenderer('h3', interviewLink, lastBlockKey),
+            blockquote: blockRenderer('blockquote', interviewLink, lastBlockKey),
+          },
+        }}
+      />
+    </div>
   )
 }
 
@@ -99,31 +214,27 @@ export function ArticleDetailPage() {
                 </Link>
               </div>
 
-              <div className="article-detail__collage">
-                <figure className="article-detail__figure article-detail__figure--wide">
-                  <img
-                    src={article.imageSrc}
-                    alt={article.imageAlt}
-                    className="article-detail__image article-detail__image--wide"
-                  />
-                </figure>
-                <figure className="article-detail__figure article-detail__figure--tall-right">
-                  <img
-                    src={article.imageSrc}
-                    alt=""
-                    aria-hidden="true"
-                    className="article-detail__image article-detail__image--tall-right"
-                  />
-                </figure>
-                <figure className="article-detail__figure article-detail__figure--small-left">
-                  <img
-                    src={article.imageSrc}
-                    alt=""
-                    aria-hidden="true"
-                    className="article-detail__image article-detail__image--small-left"
-                  />
-                </figure>
-              </div>
+              {article.articleImages.length > 0 ? (
+                <div className="article-detail__collage">
+                  {collageSlots.map((slot, index) => {
+                    const image = collageImageAt(article.articleImages, index)
+
+                    return (
+                      <figure
+                        key={slot.figureClass}
+                        className={`article-detail__figure ${slot.figureClass}`}
+                      >
+                        <img
+                          src={image.src}
+                          alt={slot.decorative ? '' : image.alt}
+                          aria-hidden={slot.decorative}
+                          className={`article-detail__image ${slot.imageClass}`}
+                        />
+                      </figure>
+                    )
+                  })}
+                </div>
+              ) : null}
             </div>
 
             <div
@@ -175,9 +286,33 @@ export function ArticleDetailPage() {
                 </div>
               </header>
 
-              {article.body.length > 0 ? (
+              {article.kind === 'news' && article.audioFileUrl ? (
+                <NewsAudioPlayer src={article.audioFileUrl} />
+              ) : null}
+
+              {article.kind === 'blog' && article.body.length > 0 ? (
                 <div className="article-detail__body">
                   <PortableText value={article.body} />
+                </div>
+              ) : null}
+
+              {article.kind === 'news' && article.description.length > 0 ? (
+                <div className="article-detail__body">
+                  <PortableText value={article.description} />
+                </div>
+              ) : null}
+
+              {article.kind === 'interview' &&
+              (article.description.length > 0 || article.interviewLink) ? (
+                <InterviewDescription
+                  description={article.description}
+                  interviewLink={article.interviewLink}
+                />
+              ) : null}
+
+              {article.kind !== 'blog' && article.transcript.length > 0 ? (
+                <div className="article-detail__body">
+                  <PortableText value={article.transcript} />
                 </div>
               ) : null}
             </div>

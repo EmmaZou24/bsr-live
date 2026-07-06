@@ -4,14 +4,17 @@ import { urlForImage } from './client'
 import type {
   ArticleCard,
   ArticleDetail,
+  ArticleImage,
+  ArticleKind,
   SanityArticleDetail,
   SanityArticleListItem,
+  SanityImage,
 } from './types'
 
-const COARSE_TAG_LABELS: Record<string, string> = {
+const COARSE_TAG_BY_KIND: Record<ArticleKind, string> = {
   blog: 'BLOG',
   news: 'NEWS',
-  interviews: 'INTERVIEWS',
+  interview: 'INTERVIEWS',
 }
 
 const GRANULAR_TAG_LABELS: Record<string, string> = {
@@ -49,8 +52,8 @@ export function formatArticleDate(isoDate: string): string {
   return `${month} ${day}${ordinalSuffix(day)}, ${year}`
 }
 
-export function coarseTagLabel(value: string): string {
-  return COARSE_TAG_LABELS[value] ?? value.toUpperCase()
+export function coarseTagFromKind(kind: ArticleKind): string {
+  return COARSE_TAG_BY_KIND[kind]
 }
 
 export function granularTagLabel(value: string | undefined): string | undefined {
@@ -58,26 +61,36 @@ export function granularTagLabel(value: string | undefined): string | undefined 
   return GRANULAR_TAG_LABELS[value] ?? value.toUpperCase()
 }
 
-function coverImageUrl(article: SanityArticleListItem): string | undefined {
-  if (!article.coverImage?.asset) return undefined
+function imageUrl(image: SanityImage | undefined): string | undefined {
+  if (!image?.asset) return undefined
 
-  return urlForImage(article.coverImage).width(800).height(800).fit('crop').url()
+  return urlForImage(image).width(800).height(800).fit('crop').url()
+}
+
+function mapArticleImages(article: SanityArticleDetail, card: ArticleCard): ArticleImage[] {
+  return (article.articleImages ?? []).flatMap((image) => {
+    const src = imageUrl(image)
+    if (!src) return []
+
+    return [{src, alt: image.alt ?? card.title}]
+  })
 }
 
 export function mapArticleToCard(article: SanityArticleListItem): ArticleCard {
   const slug = article.slug.current
-  const coarseTag = coarseTagLabel(article.coarseTag)
+  const coarseTag = coarseTagFromKind(article._type)
   const granularTag = granularTagLabel(article.granularTag)
 
   return {
     id: article._id,
+    kind: article._type,
     title: article.title,
     author: article.author,
     date: formatArticleDate(article.publishedAt),
     coarseTag,
     granularTag,
     slug,
-    imageSrc: coverImageUrl(article) ?? defaultCover,
+    imageSrc: imageUrl(article.coverImage) ?? defaultCover,
     imageAlt: article.coverImage?.alt ?? article.title,
     href: articleRoute(slug),
   }
@@ -88,7 +101,12 @@ export function mapArticleToDetail(article: SanityArticleDetail): ArticleDetail 
 
   return {
     ...card,
+    articleImages: mapArticleImages(article, card),
     body: article.body ?? [],
+    description: article.description ?? [],
+    transcript: article.transcript ?? [],
+    interviewLink: article.interviewLink,
+    audioFileUrl: article.audioFile?.asset?.url,
   }
 }
 

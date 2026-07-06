@@ -165,6 +165,23 @@
   --bsr-article-detail-scrollbar-inset-bottom: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
   --bsr-article-detail-body-indent: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
   --bsr-article-detail-title-line: calc(var(--bsr-article-detail-title-font) * 1.1);
+  --bsr-article-detail-player-font: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
+  --bsr-article-detail-player-play-icon: calc(var(--bsr-main-width) * 12 / var(--bsr-page-ref));
+  --bsr-article-detail-player-time-font: calc(var(--bsr-main-width) * 11 / var(--bsr-page-ref));
+  --bsr-article-detail-player-time-sep: calc(var(--bsr-main-width) * 2 / var(--bsr-page-ref));
+  --bsr-article-detail-player-border-width: calc(var(--bsr-main-width) * 2.5 / var(--bsr-page-ref));
+  --bsr-article-detail-player-button-height: calc(
+    var(--bsr-article-detail-player-volume-pad-y) * 2 +
+      var(--bsr-article-detail-player-volume-icon) +
+      var(--bsr-article-detail-player-border-width) * 2
+  );
+  --bsr-article-detail-player-gap: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
+  --bsr-article-detail-player-play-track-extra-gap: calc(var(--bsr-main-width) * 3 / var(--bsr-page-ref));
+  --bsr-article-detail-player-track-h: calc(var(--bsr-main-width) * 2.25 / var(--bsr-page-ref));
+  --bsr-article-detail-player-thumb: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
+  --bsr-article-detail-player-volume-pad-x: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
+  --bsr-article-detail-player-volume-pad-y: calc(var(--bsr-main-width) * 3 / var(--bsr-page-ref));
+  --bsr-article-detail-player-volume-icon: calc(var(--bsr-main-width) * 15 / var(--bsr-page-ref));
 }
 
 html,

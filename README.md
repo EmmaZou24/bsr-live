@@ -7,6 +7,8 @@
 - Responsiveness to page zoom in/out
 - Sanity GROQ queries for search
 - Figure out CMS and archiving
+- "Pinning" top articles
+- Global loading screen
 
 ### Main Page
 - Chat
