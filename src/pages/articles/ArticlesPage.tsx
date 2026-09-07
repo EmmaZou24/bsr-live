@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   BlogPost,
   PageSearch,
+  Pagination,
   type PageSearchFilterCategory,
   type PageSearchSelection,
 } from '../../components/web'
@@ -10,6 +11,8 @@ import { getArticleTags } from '../../lib/sanity/mapArticle'
 import type { ArticleCard } from '../../lib/sanity/types'
 import { NavPage } from '../NavPage'
 import '../nav-page.css'
+
+const ARTICLES_PER_PAGE = 15
 
 const articleFilterCategories: PageSearchFilterCategory[] = [
   {
@@ -73,6 +76,7 @@ export function ArticlesPage() {
   const [error, setError] = useState<string | null>(null)
   const [selectedFilters, setSelectedFilters] = useState<PageSearchSelection>({})
   const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     let cancelled = false
@@ -100,6 +104,12 @@ export function ArticlesPage() {
 
   const handleFilterChange = (categoryId: string, selectedIds: string[]) => {
     setSelectedFilters((current) => ({ ...current, [categoryId]: selectedIds }))
+    setCurrentPage(1)
+  }
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
   }
 
   const visibleArticles = useMemo(() => {
@@ -111,6 +121,12 @@ export function ArticlesPage() {
     )
   }, [articles, selectedFilters, searchQuery])
 
+  const totalPages = Math.ceil(visibleArticles.length / ARTICLES_PER_PAGE)
+  const paginatedArticles = visibleArticles.slice(
+    (currentPage - 1) * ARTICLES_PER_PAGE,
+    currentPage * ARTICLES_PER_PAGE,
+  )
+
   return (
     <NavPage
       title="articles"
@@ -121,7 +137,7 @@ export function ArticlesPage() {
           filterCategories={articleFilterCategories}
           selectedFilters={selectedFilters}
           onFilterChange={handleFilterChange}
-          onSearchChange={setSearchQuery}
+          onSearchChange={handleSearchChange}
         />
       }
     >
@@ -130,7 +146,7 @@ export function ArticlesPage() {
         <p className="articles-page__status">No articles found.</p>
       ) : null}
       <div className="articles-page__grid">
-        {visibleArticles.map((article) => (
+        {paginatedArticles.map((article) => (
           <BlogPost
             key={article.id}
             title={article.title}
@@ -144,6 +160,11 @@ export function ArticlesPage() {
           />
         ))}
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </NavPage>
   )
 }

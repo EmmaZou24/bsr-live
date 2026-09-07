@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  ShowProfile,
   PageSearch,
+  Pagination,
+  ShowProfile,
   type PageSearchFilterCategory,
   type PageSearchSelection,
 } from '../../components/web'
@@ -9,6 +10,8 @@ import { fetchShows } from '../../lib/sanity/shows'
 import type { ShowCard } from '../../lib/sanity/types'
 import { NavPage } from '../NavPage'
 import '../nav-page.css'
+
+const SHOWS_PER_PAGE = 15
 
 const showFilterCategories: PageSearchFilterCategory[] = [
   {
@@ -63,6 +66,7 @@ export function ShowsPage() {
   const [error, setError] = useState<string | null>(null)
   const [selectedFilters, setSelectedFilters] = useState<PageSearchSelection>({})
   const [searchQuery, setSearchQuery] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
 
   useEffect(() => {
     let cancelled = false
@@ -90,6 +94,12 @@ export function ShowsPage() {
 
   const handleFilterChange = (categoryId: string, selectedIds: string[]) => {
     setSelectedFilters((current) => ({ ...current, [categoryId]: selectedIds }))
+    setCurrentPage(1)
+  }
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    setCurrentPage(1)
   }
 
   const visibleShows = useMemo(() => {
@@ -99,6 +109,12 @@ export function ShowsPage() {
       (show) => showMatchesFilters(show, filterLabels) && showMatchesSearch(show, searchQuery),
     )
   }, [shows, selectedFilters, searchQuery])
+
+  const totalPages = Math.ceil(visibleShows.length / SHOWS_PER_PAGE)
+  const paginatedShows = visibleShows.slice(
+    (currentPage - 1) * SHOWS_PER_PAGE,
+    currentPage * SHOWS_PER_PAGE,
+  )
 
   return (
     <NavPage
@@ -110,7 +126,7 @@ export function ShowsPage() {
           filterCategories={showFilterCategories}
           selectedFilters={selectedFilters}
           onFilterChange={handleFilterChange}
-          onSearchChange={setSearchQuery}
+          onSearchChange={handleSearchChange}
         />
       }
     >
@@ -119,7 +135,7 @@ export function ShowsPage() {
         <p className="shows-page__status">No shows found.</p>
       ) : null}
       <div className="shows-page__grid">
-        {visibleShows.map((show) => (
+        {paginatedShows.map((show) => (
           <ShowProfile
             key={show.id}
             showTitle={show.showTitle}
@@ -132,6 +148,7 @@ export function ShowsPage() {
           />
         ))}
       </div>
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </NavPage>
   )
 }

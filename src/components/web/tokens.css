@@ -64,6 +64,7 @@
   --bsr-main-width-expanded: calc(100vw - var(--bsr-side-expanded));
   --bsr-layout-transition: 0.35s ease;
   --bsr-screen-height: 100svh;
+  --bsr-footer-height: calc(var(--bsr-main-width) * 54 / var(--bsr-page-ref));
 
   /* Side panel proportions (Figma reference frame: 464px wide) */
   --bsr-side-ref: 464;

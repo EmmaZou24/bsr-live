@@ -21,5 +21,10 @@ export type { BlogPostProps, BlogPostAccent } from './BlogPost/BlogPost'
 export { ShowProfile } from './ShowProfile/ShowProfile'
 export type { ShowProfileProps } from './ShowProfile/ShowProfile'
 
+export { Footer } from './Footer/Footer'
+
 export { ScrollingBar } from './shared/ScrollingBar'
 export { Tag } from './shared/Tag'
+
+export { Pagination } from './shared/Pagination'
+export type { PaginationProps } from './shared/Pagination'

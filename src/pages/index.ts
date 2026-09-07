@@ -7,6 +7,7 @@ export { HomePage } from './home/HomePage'
 export { SchedulePage } from './schedule/SchedulePage'
 export { ArticlesPage } from './articles/ArticlesPage'
 export { ArticleDetailPage } from './articles/ArticleDetailPage'
+export { FaqPage } from './faq/FaqPage'
 export { ShowsPage } from './shows/ShowsPage'
 export { ShowDetailPage } from './shows/ShowDetailPage'
 

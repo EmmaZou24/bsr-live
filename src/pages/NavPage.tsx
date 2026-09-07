@@ -1,5 +1,5 @@
 import { type ReactNode, type Ref } from 'react'
-import { PageTitle } from '../components/web'
+import { Footer, PageTitle } from '../components/web'
 import { ContentLoadingScreen } from './ContentLoadingScreen'
 import './nav-page.css'
 
@@ -29,6 +29,7 @@ export function NavPage({
       <div ref={bodyRef} className="nav-page__body">
         <ContentLoadingScreen isLoading={isLoading} />
         {children}
+        <Footer />
       </div>
     </div>
   )

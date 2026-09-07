@@ -40,12 +40,8 @@
   position: absolute;
   left: 0;
   top: 0;
-  z-index: 2;
-  height: var(--bsr-screen-height);
-}
-
-.page-shell--overlay.page-shell--expanded .page-shell__sidebar {
   z-index: 10;
+  height: var(--bsr-screen-height);
 }
 
 .page-shell--overlay .page-shell__content {
