@@ -1,6 +1,4 @@
-// In dev, Vite proxies /api/stream to the Icecast mount so Web Audio can read
-// frequency data (cross-origin streams are silent to the analyser). Override for
-// production with VITE_STREAM_URL once a same-origin proxy is configured there.
-export const BSR_STREAM_URL =
-  import.meta.env.VITE_STREAM_URL ??
-  (import.meta.env.DEV ? '/api/stream' : 'https://listen.bsrlive.com/bsrmp3')
+// Use a same-origin stream proxy so Web Audio can read the stream without the
+// browser hitting the upstream host directly. Override with VITE_STREAM_URL if
+// the deployment proxy is configured elsewhere.
+export const BSR_STREAM_URL = import.meta.env.VITE_STREAM_URL ?? '/api/stream'

@@ -22,9 +22,9 @@ export default defineConfig(({ mode }) => {
           },
         },
         '/api/stream': {
-          target: 'https://listen.bsrlive.com',
+          target: 'https://azuracast.bsrlive.com',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api\/stream/, '/bsrmp3'),
+          rewrite: (path) => path.replace(/^\/api\/stream/, '/listen/brown_student_radio/bsr'),
         },
       },
     },
