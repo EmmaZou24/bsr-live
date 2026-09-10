@@ -3,6 +3,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   width: 100%;
   overflow: hidden;
   background: var(--bsr-white);
@@ -13,7 +14,10 @@
   position: relative;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   overflow: auto;
+  overflow-x: hidden;
+  overscroll-behavior: none;
   padding: var(--bsr-page-body-pad);
   box-sizing: border-box;
 }

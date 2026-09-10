@@ -157,6 +157,8 @@
   flex: 0 0 auto;
   align-items: center;
   flex-wrap: nowrap;
+  min-width: 0;
+  max-width: 100%;
   gap: var(--bsr-page-search-gap);
   overflow-x: auto;
 }

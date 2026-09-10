@@ -44,18 +44,13 @@
 
 .article-detail__media-head {
   position: relative;
-  height: calc(
-    var(--bsr-article-detail-text-pad) + var(--bsr-article-detail-title-line)
-  );
+  height: calc(var(--bsr-article-detail-text-pad) + var(--bsr-article-detail-title-line));
   flex-shrink: 0;
 }
 
 .article-detail__back {
   position: absolute;
-  top: calc(
-    var(--bsr-article-detail-text-pad) +
-      (var(--bsr-article-detail-title-line) - var(--bsr-article-detail-back-height)) / 2
-  );
+  top: calc(var(--bsr-article-detail-text-pad) + (var(--bsr-article-detail-title-line) - var(--bsr-article-detail-back-height)) / 2);
   left: 0;
   display: inline-flex;
   width: var(--bsr-article-detail-back-width);
@@ -233,7 +228,7 @@
   line-height: 1.1;
 }
 
-.article-detail__body > * {
+.article-detail__body>* {
   margin: 0;
 }
 
@@ -327,8 +322,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--bsr-article-detail-player-volume-pad-y)
-    var(--bsr-article-detail-player-volume-pad-x);
+  padding: var(--bsr-article-detail-player-volume-pad-y) var(--bsr-article-detail-player-volume-pad-x);
 }
 
 .article-detail__player-track-wrap {
@@ -422,11 +416,7 @@
     --bsr-article-detail-player-time-font: calc(100cqw * 11 / var(--bsr-page-ref));
     --bsr-article-detail-player-time-sep: calc(100cqw * 2 / var(--bsr-page-ref));
     --bsr-article-detail-player-border-width: calc(100cqw * 2.5 / var(--bsr-page-ref));
-    --bsr-article-detail-player-button-height: calc(
-      var(--bsr-article-detail-player-volume-pad-y) * 2 +
-        var(--bsr-article-detail-player-volume-icon) +
-        var(--bsr-article-detail-player-border-width) * 2
-    );
+    --bsr-article-detail-player-button-height: calc(var(--bsr-article-detail-player-volume-pad-y) * 2 + var(--bsr-article-detail-player-volume-icon) + var(--bsr-article-detail-player-border-width) * 2);
     --bsr-article-detail-player-gap: calc(100cqw * 9 / var(--bsr-page-ref));
     --bsr-article-detail-player-play-track-extra-gap: calc(100cqw * 3 / var(--bsr-page-ref));
     --bsr-article-detail-player-track-h: calc(100cqw * 2.25 / var(--bsr-page-ref));

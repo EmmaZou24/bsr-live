@@ -4,6 +4,7 @@
   width: 100vw;
   height: var(--bsr-screen-height);
   overflow: hidden;
+  overscroll-behavior: none;
   background: var(--bsr-white);
 }
 
@@ -28,6 +29,7 @@
   flex: none;
   height: var(--bsr-screen-height);
   overflow: hidden;
+  overscroll-behavior: none;
   transition: width var(--bsr-layout-transition);
 }
 
@@ -51,6 +53,7 @@
   margin-left: var(--bsr-side-collapsed);
   height: var(--bsr-screen-height);
   overflow: hidden;
+  overscroll-behavior: none;
   box-sizing: border-box;
   transition: none;
   container-type: inline-size;

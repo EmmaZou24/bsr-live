@@ -6,6 +6,7 @@ html,
 body {
   margin: 0;
   height: 100%;
+  overscroll-behavior: none;
 }
 
 body {
@@ -17,6 +18,7 @@ body {
 #app {
   min-height: 100svh;
   width: 100%;
+  overscroll-behavior: none;
 }
 
 .live-stream__audio {
