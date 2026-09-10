@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   BlogPost,
   PageSearch,
@@ -77,6 +77,7 @@ export function ArticlesPage() {
   const [selectedFilters, setSelectedFilters] = useState<PageSearchSelection>({})
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const bodyRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -101,6 +102,15 @@ export function ArticlesPage() {
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    const body = bodyRef.current
+    if (!body) return
+
+    requestAnimationFrame(() => {
+      body.scrollTop = body.scrollHeight
+    })
+  }, [currentPage])
 
   const handleFilterChange = (categoryId: string, selectedIds: string[]) => {
     setSelectedFilters((current) => ({ ...current, [categoryId]: selectedIds }))
@@ -132,6 +142,7 @@ export function ArticlesPage() {
       title="articles"
       isLoading={isLoading}
       className="nav-page--articles"
+      bodyRef={bodyRef}
       search={
         <PageSearch
           filterCategories={articleFilterCategories}

@@ -133,7 +133,7 @@
   --bsr-card-tag-pad-x: calc(var(--bsr-card-width) * 8 / var(--bsr-card-ref));
   --bsr-card-tag-pad-y: calc(var(--bsr-card-width) * 4 / var(--bsr-card-ref));
   --bsr-card-tag-radius: calc(var(--bsr-card-width) * 28 / var(--bsr-card-ref));
-  --bsr-card-text-gap: calc(var(--bsr-card-width) * 3 / var(--bsr-card-ref));
+  --bsr-card-text-gap: calc(var(--bsr-card-width) * 5 / var(--bsr-card-ref));
   --bsr-card-tags-gap: calc(var(--bsr-card-width) * 9 / var(--bsr-card-ref));
 
   /* Article detail (Figma reference: 1247px content width, node 6:1271) */

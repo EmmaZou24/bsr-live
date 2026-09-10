@@ -1,9 +1,14 @@
 .pagination {
     display: flex;
     align-items: center;
-    gap: var(--bsr-page-search-gap);
-    align-self: flex-end;
+    justify-content: flex-end;
+    gap: calc(var(--bsr-page-search-gap) / 2);
+    align-self: center;
     flex-shrink: 0;
+    width: calc(
+        var(--bsr-articles-columns) * var(--bsr-card-width) +
+        (var(--bsr-articles-columns) - 1) * var(--bsr-page-grid-gap)
+    );
     margin-top: auto;
     padding: var(--bsr-page-body-pad) 0 0;
 }
