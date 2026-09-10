@@ -106,9 +106,7 @@
   --bsr-page-filter-pad-y: calc(var(--bsr-main-width) * 4 / var(--bsr-page-ref));
   --bsr-page-filter-pad-x: calc(var(--bsr-main-width) * 8 / var(--bsr-page-ref));
   --bsr-page-filter-radius: calc(var(--bsr-main-width) * 28 / var(--bsr-page-ref));
-  --bsr-page-filter-pill-height: calc(
-    var(--bsr-page-filter-pad-y) * 2 + var(--bsr-page-filter-font) * 1.1 + var(--bsr-border-width) * 2
-  );
+  --bsr-page-filter-pill-height: calc(var(--bsr-page-filter-pad-y) * 2 + var(--bsr-page-filter-font) * 1.1 + var(--bsr-border-width) * 2);
   --bsr-page-tag-remove-size: calc(var(--bsr-main-width) * 5 / var(--bsr-page-ref));
   --bsr-page-tag-remove-hit: calc(var(--bsr-main-width) * 10 / var(--bsr-page-ref));
   --bsr-page-search-clear-size: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
@@ -118,9 +116,7 @@
   --bsr-articles-row-pad: calc(var(--bsr-main-width) * 10 / var(--bsr-page-ref));
   --bsr-articles-row-gap: calc(var(--bsr-main-width) * 10 / var(--bsr-page-ref));
   /* Row padding + Article Posts row gap + next row padding (Figma: 10 + 10 + 10) */
-  --bsr-articles-between-rows: calc(
-    var(--bsr-articles-row-pad) + var(--bsr-articles-row-gap) + var(--bsr-articles-row-pad)
-  );
+  --bsr-articles-between-rows: calc(var(--bsr-articles-row-pad) + var(--bsr-articles-row-gap) + var(--bsr-articles-row-pad));
   --bsr-articles-columns: 5;
 
   /* Card proportions (Figma reference frame: 222 × 338, within 1247px page width) */
@@ -171,11 +167,7 @@
   --bsr-article-detail-player-time-font: calc(var(--bsr-main-width) * 11 / var(--bsr-page-ref));
   --bsr-article-detail-player-time-sep: calc(var(--bsr-main-width) * 2 / var(--bsr-page-ref));
   --bsr-article-detail-player-border-width: calc(var(--bsr-main-width) * 2.5 / var(--bsr-page-ref));
-  --bsr-article-detail-player-button-height: calc(
-    var(--bsr-article-detail-player-volume-pad-y) * 2 +
-      var(--bsr-article-detail-player-volume-icon) +
-      var(--bsr-article-detail-player-border-width) * 2
-  );
+  --bsr-article-detail-player-button-height: calc(var(--bsr-article-detail-player-volume-pad-y) * 2 + var(--bsr-article-detail-player-volume-icon) + var(--bsr-article-detail-player-border-width) * 2);
   --bsr-article-detail-player-gap: calc(var(--bsr-main-width) * 9 / var(--bsr-page-ref));
   --bsr-article-detail-player-play-track-extra-gap: calc(var(--bsr-main-width) * 3 / var(--bsr-page-ref));
   --bsr-article-detail-player-track-h: calc(var(--bsr-main-width) * 2.25 / var(--bsr-page-ref));
