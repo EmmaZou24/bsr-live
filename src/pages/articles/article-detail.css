@@ -450,10 +450,3 @@
     border-top: var(--bsr-article-detail-border-width) solid var(--bsr-black);
   }
 }
-
-@media (min-width: 901px) {
-  .article-detail__layout {
-    padding-bottom: calc(var(--bsr-footer-height) + var(--bsr-page-body-pad) * 2);
-    margin-bottom: calc(-1 * (var(--bsr-footer-height) + var(--bsr-page-body-pad) * 2));
-  }
-}

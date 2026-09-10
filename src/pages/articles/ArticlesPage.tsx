@@ -13,6 +13,7 @@ import { NavPage } from '../NavPage'
 import '../nav-page.css'
 
 const ARTICLES_PER_PAGE = 15
+const ARTICLES_SCROLL_POSITION_KEY = 'bsr-articles-scroll-position'
 
 const articleFilterCategories: PageSearchFilterCategory[] = [
   {
@@ -78,6 +79,7 @@ export function ArticlesPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const bodyRef = useRef<HTMLDivElement>(null)
+  const previousPageRef = useRef<number | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -104,12 +106,43 @@ export function ArticlesPage() {
   }, [])
 
   useEffect(() => {
+    return () => {
+      const body = bodyRef.current
+      if (body) sessionStorage.setItem(ARTICLES_SCROLL_POSITION_KEY, String(body.scrollTop))
+    }
+  }, [])
+
+  useEffect(() => {
+    if (isLoading) return
+
+    const savedPosition = sessionStorage.getItem(ARTICLES_SCROLL_POSITION_KEY)
+    if (savedPosition === null) return
+
+    const frame = requestAnimationFrame(() => {
+      const body = bodyRef.current
+      if (body) body.scrollTop = Number(savedPosition)
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [isLoading])
+
+  useEffect(() => {
+    if (previousPageRef.current === null) {
+      previousPageRef.current = currentPage
+      return
+    }
+
+    if (previousPageRef.current === currentPage) return
+    previousPageRef.current = currentPage
+
     const body = bodyRef.current
     if (!body) return
 
-    requestAnimationFrame(() => {
+    const frame = requestAnimationFrame(() => {
       body.scrollTop = body.scrollHeight
     })
+
+    return () => cancelAnimationFrame(frame)
   }, [currentPage])
 
   const handleFilterChange = (categoryId: string, selectedIds: string[]) => {

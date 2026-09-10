@@ -54,24 +54,8 @@ function getTrackInsets(scrollElement: HTMLElement): { insetTop: number; insetBo
   }
 }
 
-function getTrackHeight(scrollElement: HTMLElement): number {
-  const divider = scrollElement.querySelector<HTMLElement>('.article-detail__divider')
-  const footer = scrollElement.querySelector<HTMLElement>('.site-footer')
-  if (!divider || !footer) return scrollElement.clientHeight
-
-  const previousHeight = divider.style.height
-  divider.style.height = '0px'
-
-  const scrollRect = scrollElement.getBoundingClientRect()
-  const footerBottom = footer.getBoundingClientRect().bottom
-  const footerBottomInContent = footerBottom - scrollRect.top + scrollElement.scrollTop
-
-  divider.style.height = previousHeight
-  return Math.max(scrollElement.clientHeight, footerBottomInContent)
-}
-
 function getTrackGeometry(scrollElement: HTMLElement): TrackGeometry {
-  const trackHeight = getTrackHeight(scrollElement)
+  const trackHeight = scrollElement.clientHeight
   const thumbHeight = getThumbHeight(scrollElement)
   const { insetTop, insetBottom } = getTrackInsets(scrollElement)
   const thumbTravel = Math.max(trackHeight - thumbHeight - insetTop - insetBottom, 0)
