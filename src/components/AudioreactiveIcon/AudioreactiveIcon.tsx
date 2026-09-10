@@ -6,7 +6,9 @@ import './audioreactive-icon.css'
 export function AudioreactiveIcon() {
   const containerRef = useRef<HTMLDivElement>(null)
   const connectAudioRef = useRef<(() => void) | null>(null)
+  const resetShuffleRef = useRef<(() => void) | null>(null)
   const { isPlaying, audioRef } = useLiveStream()
+  const wasPausedOnMountRef = useRef(!isPlaying)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -21,9 +23,11 @@ export function AudioreactiveIcon() {
     })
 
     connectAudioRef.current = instance.connectAudio
+    resetShuffleRef.current = instance.resetShuffle
 
     return () => {
       connectAudioRef.current = null
+      resetShuffleRef.current = null
       instance.dispose()
     }
   }, [audioRef])
@@ -34,6 +38,13 @@ export function AudioreactiveIcon() {
     // the analyser bound so frequency data can decay — but do not create the
     // graph on idle load, or silent bins force s → 0 and hide the shuffle.
     connectAudioRef.current?.()
+  }, [isPlaying, loading])
+
+  useEffect(() => {
+    if (loading) return
+
+    if (wasPausedOnMountRef.current && !isPlaying) resetShuffleRef.current?.()
+    wasPausedOnMountRef.current = false
   }, [isPlaying, loading])
 
   return (

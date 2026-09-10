@@ -254,6 +254,13 @@ export function initBsrTypography({ container, audioElement, onReady }) {
     bindAnalyser()
   }
 
+  function resetShuffle() {
+    // Let a paused home screen display its shuffled static arrangement.
+    analyser = null
+    dataArray = null
+    shuffleValues()
+  }
+
   function initLetters(word) {
     getAllChars(word)
       .split('')
@@ -290,6 +297,8 @@ export function initBsrTypography({ container, audioElement, onReady }) {
   }
 
   function shuffleValues() {
+    if (!stacks) return
+
     stacks.forEach((stack, i) => {
       const p = PARAMS.letters[i]
       p.rotX = (Math.random() * 2 - 1) * 0.65
@@ -656,8 +665,8 @@ export function initBsrTypography({ container, audioElement, onReady }) {
       const bbox = glyph.getBoundingBox()
       const kern = nextChar
         ? ctx.measureText(char + nextChar).width -
-          ctx.measureText(char).width -
-          ctx.measureText(nextChar).width
+        ctx.measureText(char).width -
+        ctx.measureText(nextChar).width
         : 0
 
       return {
@@ -757,5 +766,6 @@ export function initBsrTypography({ container, audioElement, onReady }) {
       renderer.dispose()
     },
     connectAudio,
+    resetShuffle,
   }
 }

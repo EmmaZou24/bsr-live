@@ -1,6 +1,7 @@
 export type BsrTypographyInstance = {
   dispose: () => void
   connectAudio: () => void
+  resetShuffle: () => void
 }
 
 export function initBsrTypography(options: {
