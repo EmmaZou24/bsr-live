@@ -266,7 +266,8 @@ export function SidePanel({
               />
             </>
           )}
-          {activeTab === 'chat' && <p className="side-panel__about-text">chat</p>}
+          {activeTab === 'chat' && <p className="side-panel__about-text">Coming soon!</p>}
+          {activeTab === 'show-details' && <p className="side-panel__about-text">Coming soon!</p>}
         </div>
       </div>
 
