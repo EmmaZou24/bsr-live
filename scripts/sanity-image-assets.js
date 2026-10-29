@@ -25,7 +25,7 @@ function imageAlt($, element, media) {
     return caption || media.display_name || media.name || "";
 }
 
-async function uploadImage($, element, media) {
+export async function uploadCargoImage($, element, media) {
     if (uploadedImages.has(media.hash)) return uploadedImages.get(media.hash);
     if (!sanityClient) {
         throw new Error(
@@ -57,7 +57,7 @@ export async function uploadArticleImages($, page) {
     for (const element of elements) {
         const media = mediaByHash.get($(element).attr("hash"));
         if (!media || !media.is_image || media.is_placeholder) continue;
-        images.push(await uploadImage($, element, media));
+        images.push(await uploadCargoImage($, element, media));
     }
 
     return images;

@@ -1,4 +1,3 @@
-import defaultCover from '../../assets/web/blog-cover.jpg'
 import { articleRoute } from '../../pages/routes'
 import { urlForImage } from './client'
 import type {
@@ -90,7 +89,7 @@ export function mapArticleToCard(article: SanityArticleListItem): ArticleCard {
     coarseTag,
     granularTag,
     slug,
-    imageSrc: imageUrl(article.coverImage) ?? defaultCover,
+    imageSrc: imageUrl(article.coverImage),
     imageAlt: article.coverImage?.alt ?? article.title,
     href: articleRoute(slug),
   }

@@ -2,7 +2,7 @@ import scrollbarHandle from '../../assets/web/article-scrollbar-handle.svg'
 import { PortableText, type PortableTextBlockComponent } from '@portabletext/react'
 import type { PortableTextBlock } from '@portabletext/types'
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { Tag } from '../../components/web'
 import { fetchArticleBySlug } from '../../lib/sanity/articles'
 import type { ArticleDetail } from '../../lib/sanity/types'
@@ -145,6 +145,7 @@ function InterviewDescription({
 
 export function ArticleDetailPage() {
   const { slug } = useParams<{ slug: string }>()
+  const [searchParams] = useSearchParams()
   const [article, setArticle] = useState<ArticleDetail | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -201,6 +202,10 @@ export function ArticleDetailPage() {
     metrics.canScroll && thumbTravel > 0
       ? Math.round(((metrics.thumbTop - metrics.insetTop) / thumbTravel) * 100)
       : 0
+  const fromPage = Number(searchParams.get('fromPage'))
+  const articlesPath = Number.isInteger(fromPage) && fromPage > 1
+    ? `${ROUTES.articles}?page=${fromPage}`
+    : ROUTES.articles
 
   return (
     <NavPage hideTitle className="nav-page--article-detail" bodyRef={scrollRef}>
@@ -211,7 +216,7 @@ export function ArticleDetailPage() {
           <div className="article-detail__layout">
             <div className="article-detail__media">
               <div className="article-detail__media-head">
-                <Link to={ROUTES.articles} className="article-detail__back" aria-label="Back to all articles">
+                <Link to={articlesPath} className="article-detail__back" aria-label="Back to all articles">
                   <BackArrowIcon />
                 </Link>
               </div>

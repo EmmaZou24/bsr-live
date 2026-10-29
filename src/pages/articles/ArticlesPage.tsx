@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import {
   BlogPost,
   PageSearch,
@@ -72,12 +73,16 @@ function articleMatchesSearch(article: ArticleCard, query: string): boolean {
 }
 
 export function ArticlesPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [articles, setArticles] = useState<ArticleCard[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedFilters, setSelectedFilters] = useState<PageSearchSelection>({})
   const [searchQuery, setSearchQuery] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(() => {
+    const page = Number(searchParams.get('page'))
+    return Number.isInteger(page) && page > 0 ? page : 1
+  })
   const bodyRef = useRef<HTMLDivElement>(null)
   const previousPageRef = useRef<number | null>(null)
 
@@ -104,6 +109,16 @@ export function ArticlesPage() {
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    const nextSearchParams = new URLSearchParams(searchParams)
+    if (currentPage === 1) nextSearchParams.delete('page')
+    else nextSearchParams.set('page', String(currentPage))
+
+    if (nextSearchParams.toString() !== searchParams.toString()) {
+      setSearchParams(nextSearchParams, { replace: true })
+    }
+  }, [currentPage, searchParams, setSearchParams])
 
   useEffect(() => {
     return () => {
@@ -200,7 +215,7 @@ export function ArticlesPage() {
             imageAlt={article.imageAlt}
             coarseTag={article.coarseTag}
             granularTag={article.granularTag}
-            href={article.href}
+            href={`${article.href}?fromPage=${currentPage}`}
           />
         ))}
       </div>

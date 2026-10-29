@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import defaultCover from '../../../assets/web/blog-cover.jpg'
+import fallbackImage from '../../../assets/web/article-fallback.jpg'
 import { Tag } from '../shared/Tag'
 import './blog-post.css'
 
@@ -35,7 +35,7 @@ export function BlogPost({
   title = 'Where Did The Rhode Island Music Scene Go?',
   author = 'millie cheng',
   date = 'July 12th, 2026',
-  imageSrc = defaultCover,
+  imageSrc = fallbackImage,
   imageAlt = '',
   coarseTag = 'BLOG',
   granularTag = 'COMMUNITY',
