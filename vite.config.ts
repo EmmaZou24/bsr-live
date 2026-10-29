@@ -6,6 +6,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    define: {
+      'import.meta.env.SANITY_PROJECT_ID': JSON.stringify(env.SANITY_PROJECT_ID),
+      'import.meta.env.SANITY_DATASET': JSON.stringify(env.SANITY_DATASET),
+      'import.meta.env.SANITY_API_VERSION': JSON.stringify(env.SANITY_API_VERSION),
+    },
     server: {
       proxy: {
         '/api/spinitron': {

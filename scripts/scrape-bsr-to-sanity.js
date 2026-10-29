@@ -25,16 +25,21 @@
  *
  * Usage:
  *   npm install axios cheerio
- *   node scrape-bsr-to-sanity-v2.js
+ *   SANITY_API_TOKEN=... node scripts/scrape-bsr-to-sanity.js
  *
  * Output:
  *   posts.ndjson  -> sanity dataset import posts.ndjson production
+ *
+ * Images are uploaded to the Sanity project before their references are
+ * written to coverImage and articleImages. Set SANITY_PROJECT_ID and
+ * SANITY_DATASET to override their defaults.
  */
 
 import fs from "node:fs";
 import path from "node:path";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { uploadArticleImages } from "./sanity-image-assets.js";
 
 const SITEMAP_URL = "https://bsrlive.com/sitemap.xml";
 const OUTPUT_FILE = "posts.ndjson";
@@ -171,7 +176,7 @@ function splitBodySpanIntoParagraphs(innerHtml) {
     .filter((p) => p.length > 0);
 }
 
-function extractPost(state, url) {
+async function extractPost(state, url) {
   const pageId = state.frontendState && state.frontendState.activePID;
   const page = pageId && state.pages && state.pages.byId && state.pages.byId[pageId];
   if (!page) {
@@ -202,6 +207,7 @@ function extractPost(state, url) {
   });
 
   const body = bodyParagraphsHtml.map(htmlFragmentToBlock);
+  const articleImages = await uploadArticleImages($, page);
 
   const slug = slugFromUrl(url);
 
@@ -212,6 +218,8 @@ function extractPost(state, url) {
     slug: { _type: "slug", current: slug },
     author,
     publishedAt,
+    ...(articleImages[0] ? { coverImage: articleImages[0] } : {}),
+    articleImages,
     body,
   };
 }

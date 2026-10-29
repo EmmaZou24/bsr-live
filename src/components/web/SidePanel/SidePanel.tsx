@@ -38,10 +38,9 @@ export type SidePanelProps = {
 const defaultNavItems: SidePanelNavItem[] = [
   { id: 'schedule', label: 'schedule', availability: 'available' },
   { id: 'articles', label: 'articles', availability: 'available' },
-  { id: 'shows', label: 'shows', availability: 'available' },
+  { id: 'shows', label: 'shows', availability: 'unavailable' },
   { id: 'events', label: 'events', availability: 'unavailable' },
   { id: 'archive', label: 'archive', availability: 'unavailable' },
-  { id: 'support', label: 'support', availability: 'unavailable' },
 ]
 
 const defaultAboutText =
@@ -239,6 +238,7 @@ export function SidePanel({
               key={tab.id}
               type="button"
               role="tab"
+              hidden={tab.id === 'chat' || tab.id === 'show-details'}
               id={`side-panel-tab-${tab.id}`}
               aria-selected={activeTab === tab.id}
               aria-controls={`side-panel-panel-${tab.id}`}

@@ -28,16 +28,21 @@
  *
  * Usage:
  *   npm install axios cheerio
- *   node scripts/scrape-bsr-news-to-sanity.js
+ *   SANITY_API_TOKEN=... node scripts/scrape-bsr-news-to-sanity.js
  *
  * Output:
  *   news-posts.ndjson  -> sanity dataset import news-posts.ndjson --dataset production
+ *
+ * Images are uploaded to the Sanity project before their references are
+ * written to coverImage and articleImages. Set SANITY_PROJECT_ID and
+ * SANITY_DATASET to override their defaults.
  */
 
 import fs from "node:fs";
 import path from "node:path";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import { uploadArticleImages } from "./sanity-image-assets.js";
 
 const SITEMAP_URL = "https://bsrlive.com/sitemap.xml";
 const OUTPUT_FILE = "news-posts.ndjson";
@@ -164,7 +169,7 @@ function splitIntoParagraphs(innerHtml) {
     .filter((p) => p.length > 0);
 }
 
-function extractNewsPost(state, url) {
+async function extractNewsPost(state, url) {
   const pageId = state.frontendState && state.frontendState.activePID;
   const page = pageId && state.pages && state.pages.byId && state.pages.byId[pageId];
   if (!page) {
@@ -223,6 +228,7 @@ function extractNewsPost(state, url) {
   });
 
   const body = bodyParagraphsHtml.map(htmlFragmentToBlock);
+  const articleImages = await uploadArticleImages($, page);
   const slug = slugFromUrl(url);
 
   return {
@@ -232,6 +238,8 @@ function extractNewsPost(state, url) {
     slug: { _type: "slug", current: slug },
     author: "BSR News",
     publishedAt,
+    ...(articleImages[0] ? { coverImage: articleImages[0] } : {}),
+    articleImages,
     description: body,
   };
 }
