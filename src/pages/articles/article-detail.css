@@ -37,7 +37,7 @@
   display: flex;
   flex: 1 1 0;
   flex-direction: column;
-  gap: var(--bsr-article-detail-gap);
+  gap: calc(var(--bsr-article-detail-gap) * 3);
   min-width: 0;
   padding: 0 var(--bsr-article-detail-pad) var(--bsr-article-detail-pad);
 }
@@ -65,52 +65,21 @@
   height: 100%;
 }
 
-.article-detail__collage {
+.article-detail__image-container {
   display: flex;
-  flex-direction: column;
-  gap: var(--bsr-article-detail-gap);
-  width: min(100%, var(--bsr-article-detail-media-width));
+  justify-content: center;
+  width: 100%;
 }
 
 .article-detail__figure {
-  position: relative;
-  width: 100%;
-  height: var(--bsr-article-detail-row-height);
+  width: min(90%, var(--bsr-article-detail-media-width));
   margin: 0;
-  overflow: hidden;
 }
 
 .article-detail__image {
   display: block;
-  max-width: none;
-  object-fit: cover;
-}
-
-/* Figma collage ratios within 590×260 rows */
-.article-detail__image--wide {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 66.44%;
-  height: 83.85%;
-}
-
-.article-detail__image--tall-right {
-  position: absolute;
-  top: 0;
-  left: 61.19%;
-  width: 42.2%;
-  height: 100%;
-  object-position: 75% center;
-}
-
-.article-detail__image--small-left {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 28.81%;
-  height: 68.46%;
-  object-position: 20% center;
+  width: 100%;
+  height: auto;
 }
 
 .article-detail__divider {

@@ -30,28 +30,6 @@ function BackArrowIcon() {
   )
 }
 
-const collageSlots = [
-  {
-    figureClass: 'article-detail__figure--wide',
-    imageClass: 'article-detail__image--wide',
-    decorative: false,
-  },
-  {
-    figureClass: 'article-detail__figure--tall-right',
-    imageClass: 'article-detail__image--tall-right',
-    decorative: true,
-  },
-  {
-    figureClass: 'article-detail__figure--small-left',
-    imageClass: 'article-detail__image--small-left',
-    decorative: true,
-  },
-] as const
-
-function collageImageAt(images: ArticleDetail['articleImages'], index: number) {
-  return images[index] ?? images[0]
-}
-
 function InterviewWatchLink({ href }: { href: string }) {
   return (
     <>
@@ -203,9 +181,13 @@ export function ArticleDetailPage() {
       ? Math.round(((metrics.thumbTop - metrics.insetTop) / thumbTravel) * 100)
       : 0
   const fromPage = Number(searchParams.get('fromPage'))
-  const articlesPath = Number.isInteger(fromPage) && fromPage > 1
-    ? `${ROUTES.articles}?page=${fromPage}`
-    : ROUTES.articles
+  const articlesParams = new URLSearchParams()
+  if (Number.isInteger(fromPage) && fromPage > 1) articlesParams.set('page', String(fromPage))
+  for (const [key, value] of searchParams.entries()) {
+    if (key.startsWith('filter-')) articlesParams.set(key, value)
+  }
+  const articlesQuery = articlesParams.toString()
+  const articlesPath = articlesQuery ? `${ROUTES.articles}?${articlesQuery}` : ROUTES.articles
 
   return (
     <NavPage hideTitle className="nav-page--article-detail" bodyRef={scrollRef}>
@@ -222,24 +204,14 @@ export function ArticleDetailPage() {
               </div>
 
               {article.articleImages.length > 0 ? (
-                <div className="article-detail__collage">
-                  {collageSlots.map((slot, index) => {
-                    const image = collageImageAt(article.articleImages, index)
-
-                    return (
-                      <figure
-                        key={slot.figureClass}
-                        className={`article-detail__figure ${slot.figureClass}`}
-                      >
-                        <img
-                          src={image.src}
-                          alt={slot.decorative ? '' : image.alt}
-                          aria-hidden={slot.decorative}
-                          className={`article-detail__image ${slot.imageClass}`}
-                        />
-                      </figure>
-                    )
-                  })}
+                <div className="article-detail__image-container">
+                  <figure className="article-detail__figure">
+                    <img
+                      src={article.articleImages[0].src}
+                      alt={article.articleImages[0].alt}
+                      className="article-detail__image"
+                    />
+                  </figure>
                 </div>
               ) : null}
             </div>

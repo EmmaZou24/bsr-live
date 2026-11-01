@@ -54,6 +54,46 @@ function getSelectedFilterLabels(
   })
 }
 
+function getFiltersFromSearchParams(searchParams: URLSearchParams): PageSearchSelection {
+  return Object.fromEntries(
+    articleFilterCategories.flatMap((category) => {
+      const selectedIds = searchParams.get(`filter-${category.id}`)?.split(',').filter(Boolean) ?? []
+      return selectedIds.length > 0 ? [[category.id, selectedIds]] : []
+    }),
+  )
+}
+
+function setFilterSearchParams(
+  searchParams: URLSearchParams,
+  selectedFilters: PageSearchSelection,
+): URLSearchParams {
+  const nextSearchParams = new URLSearchParams(searchParams)
+
+  for (const category of articleFilterCategories) {
+    const key = `filter-${category.id}`
+    const selectedIds = selectedFilters[category.id] ?? []
+    if (selectedIds.length > 0) nextSearchParams.set(key, selectedIds.join(','))
+    else nextSearchParams.delete(key)
+  }
+
+  return nextSearchParams
+}
+
+function articleDetailHref(
+  href: string,
+  currentPage: number,
+  selectedFilters: PageSearchSelection,
+): string {
+  const params = new URLSearchParams({ fromPage: String(currentPage) })
+
+  for (const category of articleFilterCategories) {
+    const selectedIds = selectedFilters[category.id] ?? []
+    if (selectedIds.length > 0) params.set(`filter-${category.id}`, selectedIds.join(','))
+  }
+
+  return `${href}?${params.toString()}`
+}
+
 function articleMatchesFilters(article: ArticleCard, filterLabels: string[]): boolean {
   if (filterLabels.length === 0) return true
 
@@ -77,7 +117,9 @@ export function ArticlesPage() {
   const [articles, setArticles] = useState<ArticleCard[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedFilters, setSelectedFilters] = useState<PageSearchSelection>({})
+  const [selectedFilters, setSelectedFilters] = useState<PageSearchSelection>(() =>
+    getFiltersFromSearchParams(searchParams),
+  )
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(() => {
     const page = Number(searchParams.get('page'))
@@ -111,14 +153,14 @@ export function ArticlesPage() {
   }, [])
 
   useEffect(() => {
-    const nextSearchParams = new URLSearchParams(searchParams)
+    const nextSearchParams = setFilterSearchParams(searchParams, selectedFilters)
     if (currentPage === 1) nextSearchParams.delete('page')
     else nextSearchParams.set('page', String(currentPage))
 
     if (nextSearchParams.toString() !== searchParams.toString()) {
       setSearchParams(nextSearchParams, { replace: true })
     }
-  }, [currentPage, searchParams, setSearchParams])
+  }, [currentPage, searchParams, selectedFilters, setSearchParams])
 
   useEffect(() => {
     return () => {
@@ -161,13 +203,22 @@ export function ArticlesPage() {
   }, [currentPage])
 
   const handleFilterChange = (categoryId: string, selectedIds: string[]) => {
-    setSelectedFilters((current) => ({ ...current, [categoryId]: selectedIds }))
+    const nextFilters = { ...selectedFilters, [categoryId]: selectedIds }
+    const nextSearchParams = setFilterSearchParams(searchParams, nextFilters)
+    nextSearchParams.delete('page')
+
+    setSelectedFilters(nextFilters)
     setCurrentPage(1)
+    setSearchParams(nextSearchParams, { replace: true })
   }
 
   const handleSearchChange = (value: string) => {
+    const nextSearchParams = setFilterSearchParams(searchParams, selectedFilters)
+    nextSearchParams.delete('page')
+
     setSearchQuery(value)
     setCurrentPage(1)
+    setSearchParams(nextSearchParams, { replace: true })
   }
 
   const visibleArticles = useMemo(() => {
@@ -215,7 +266,7 @@ export function ArticlesPage() {
             imageAlt={article.imageAlt}
             coarseTag={article.coarseTag}
             granularTag={article.granularTag}
-            href={`${article.href}?fromPage=${currentPage}`}
+            href={articleDetailHref(article.href, currentPage, selectedFilters)}
           />
         ))}
       </div>
