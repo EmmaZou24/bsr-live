@@ -1,0 +1,17 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.home-page__visualizer {
+  width: 100%;
+  height: var(--bsr-screen-height);
+  flex: 0 0 var(--bsr-screen-height);
+}
+
+.page-shell--push .site-footer {
+  width: 100%;
+  margin-left: 0;
+  margin-top: 0;
+}

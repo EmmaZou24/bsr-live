@@ -29,6 +29,10 @@
   padding: var(--bsr-page-body-pad);
 }
 
+.nav-page--articles .nav-page__body {
+  padding-bottom: 0;
+}
+
 .articles-page__grid,
 .shows-page__grid {
   display: grid;

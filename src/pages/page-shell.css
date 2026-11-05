@@ -28,7 +28,7 @@
   width: var(--bsr-main-width);
   flex: none;
   height: var(--bsr-screen-height);
-  overflow: hidden;
+  overflow: auto;
   overscroll-behavior: none;
   transition: width var(--bsr-layout-transition);
 }
