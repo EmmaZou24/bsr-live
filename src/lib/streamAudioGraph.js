@@ -37,10 +37,3 @@ export function resumeStreamAudio(audioElement) {
   }
   return graph
 }
-
-export function suspendStreamAudio(audioElement) {
-  const graph = audioGraphByElement.get(audioElement)
-  if (graph?.audioCtx.state === 'running') {
-    void graph.audioCtx.suspend()
-  }
-}

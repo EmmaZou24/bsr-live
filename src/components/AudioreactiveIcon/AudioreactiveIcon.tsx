@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLiveStream } from '../../context/LiveStreamContext'
-import { initBsrTypography } from './initBsrTypography.js'
+import type { BsrTypographyInstance } from './initBsrTypography.js'
 import './audioreactive-icon.css'
 
 export function AudioreactiveIcon() {
@@ -16,19 +16,41 @@ export function AudioreactiveIcon() {
     const audioElement = audioRef.current
     if (!container || !audioElement) return
 
-    const instance = initBsrTypography({
-      container,
-      audioElement,
-      onReady: () => setLoading(false),
-    })
+    let disposed = false
+    let instance: BsrTypographyInstance | null = null
 
-    connectAudioRef.current = instance.connectAudio
-    resetShuffleRef.current = instance.resetShuffle
+    void import('./initBsrTypography.js')
+      .then(({ initBsrTypography }) => {
+        if (disposed) return
+
+        instance = initBsrTypography({
+          container,
+          audioElement,
+          onReady: () => {
+            if (!disposed) setLoading(false)
+          },
+        })
+
+        if (disposed) {
+          instance.dispose()
+          instance = null
+          return
+        }
+
+        connectAudioRef.current = instance.connectAudio
+        resetShuffleRef.current = instance.resetShuffle
+      })
+      .catch((error: unknown) => {
+        if (disposed) return
+        console.error('Failed to load the audio-reactive visualizer', error)
+        setLoading(false)
+      })
 
     return () => {
+      disposed = true
       connectAudioRef.current = null
       resetShuffleRef.current = null
-      instance.dispose()
+      instance?.dispose()
     }
   }, [audioRef])
 

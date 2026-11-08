@@ -45,6 +45,15 @@
   box-sizing: border-box;
 }
 
+@media (max-aspect-ratio: 3 / 4) {
+  .nav-page--articles .articles-page__grid {
+    --bsr-card-width: calc(
+      (100% - var(--bsr-page-grid-gap) - 2 * var(--bsr-articles-row-pad)) / 2
+    );
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .articles-page__status {
   margin: 0;
   padding: 0 var(--bsr-page-body-pad) var(--bsr-page-body-pad);

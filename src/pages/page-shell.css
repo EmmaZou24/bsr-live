@@ -87,3 +87,41 @@
   font-size: inherit;
   line-height: 1.1;
 }
+
+@media (max-aspect-ratio: 3 / 4) {
+  .page-shell {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: var(--bsr-screen-height);
+    overflow: visible;
+  }
+
+  .page-shell__sidebar,
+  .page-shell--overlay .page-shell__sidebar {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    border-right: 0;
+    cursor: default;
+  }
+
+  .page-shell__content,
+  .page-shell--push .page-shell__content,
+  .page-shell--push.page-shell--expanded .page-shell__content,
+  .page-shell--overlay .page-shell__content {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    margin-left: 0;
+    overflow: visible;
+  }
+
+  .page-shell--overlay .page-shell__content {
+    display: flex;
+  }
+}

@@ -159,11 +159,6 @@ export async function fetchLiveBroadcast(): Promise<SpinitronLiveData> {
   }
 }
 
-export async function fetchNowPlaying(): Promise<NowPlaying> {
-  const live = await fetchLiveBroadcast()
-  return live.nowPlaying
-}
-
 export function getDefaultLiveBroadcast(): SpinitronLiveData {
   return {
     nowPlaying: {
