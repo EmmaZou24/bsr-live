@@ -174,6 +174,28 @@
   box-sizing: border-box;
 }
 
+.side-panel__broadcast-link-wrap {
+  padding: var(--bsr-side-gap) calc(var(--bsr-side-gap) * 2);
+  border-left: var(--bsr-border);
+  border-right: var(--bsr-border);
+}
+
+.side-panel__broadcast-link {
+  display: block;
+  color: var(--bsr-black);
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-side-font-md);
+  font-weight: 700;
+  line-height: 1.1;
+  transition: transform 0.15s ease;
+}
+
+@media (hover: hover) {
+  .side-panel__broadcast-link:hover {
+    transform: scale(1.02);
+  }
+}
+
 .side-panel__tabs {
   display: flex;
   flex-wrap: wrap;

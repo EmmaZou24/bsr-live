@@ -271,6 +271,17 @@ export function SidePanel({
         </div>
       </div>
 
+      <div className="side-panel__broadcast-link-wrap">
+        <a
+          className="side-panel__broadcast-link"
+          href="https://azuracast.bsrlive.com/public/bsr_sports"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Listen to BSR Sports Broadcasting!
+        </a>
+      </div>
+
       <nav className="side-panel__nav" aria-label="Site navigation">
         {navItems.map((item) => {
           const isAvailable = item.availability !== 'unavailable'
