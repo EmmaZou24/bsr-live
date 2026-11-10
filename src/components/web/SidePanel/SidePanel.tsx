@@ -238,7 +238,7 @@ export function SidePanel({
               key={tab.id}
               type="button"
               role="tab"
-              hidden={tab.id === 'chat' || tab.id === 'show-details'}
+              hidden={tab.id === 'about' || tab.id === 'chat' || tab.id === 'show-details'}
               id={`side-panel-tab-${tab.id}`}
               aria-selected={activeTab === tab.id}
               aria-controls={`side-panel-panel-${tab.id}`}

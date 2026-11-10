@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import {
   BlogPost,
@@ -126,7 +126,7 @@ export function ArticlesPage() {
     return Number.isInteger(page) && page > 0 ? page : 1
   })
   const bodyRef = useRef<HTMLDivElement>(null)
-  const previousPageRef = useRef<number | null>(null)
+  const pendingPageScrollRatioRef = useRef<number | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -183,24 +183,28 @@ export function ArticlesPage() {
     return () => cancelAnimationFrame(frame)
   }, [isLoading])
 
-  useEffect(() => {
-    if (previousPageRef.current === null) {
-      previousPageRef.current = currentPage
-      return
-    }
-
-    if (previousPageRef.current === currentPage) return
-    previousPageRef.current = currentPage
+  useLayoutEffect(() => {
+    const scrollRatio = pendingPageScrollRatioRef.current
+    if (scrollRatio === null) return
+    pendingPageScrollRatioRef.current = null
 
     const body = bodyRef.current
     if (!body) return
 
-    const frame = requestAnimationFrame(() => {
-      body.scrollTop = body.scrollHeight
-    })
-
-    return () => cancelAnimationFrame(frame)
+    const maxScrollTop = body.scrollHeight - body.clientHeight
+    body.scrollTop = scrollRatio * Math.max(0, maxScrollTop)
   }, [currentPage])
+
+  const handlePageChange = (page: number) => {
+    const body = bodyRef.current
+    if (body) {
+      const maxScrollTop = body.scrollHeight - body.clientHeight
+      pendingPageScrollRatioRef.current =
+        maxScrollTop > 0 ? body.scrollTop / maxScrollTop : 0
+    }
+
+    setCurrentPage(page)
+  }
 
   const handleFilterChange = (categoryId: string, selectedIds: string[]) => {
     const nextFilters = { ...selectedFilters, [categoryId]: selectedIds }
@@ -273,7 +277,7 @@ export function ArticlesPage() {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        onPageChange={handlePageChange}
       />
     </NavPage>
   )

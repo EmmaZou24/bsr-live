@@ -86,7 +86,7 @@
   /* Page header proportions (Figma reference frame: 1247px content width) */
   --bsr-page-ref: 1247;
   --bsr-page-title-height: calc(var(--bsr-main-width) * 223 / var(--bsr-page-ref));
-  --bsr-page-title-row-height: calc(var(--bsr-main-width) * 191 / var(--bsr-page-ref));
+  --bsr-page-title-row-height: calc(var(--bsr-main-width) * 175 / var(--bsr-page-ref));
   --bsr-page-ticker-height: calc(var(--bsr-main-width) * 32 / var(--bsr-page-ref));
   --bsr-page-ticker-pad-x: calc(var(--bsr-main-width) * 18 / var(--bsr-page-ref));
   --bsr-page-ticker-font: calc(var(--bsr-main-width) * 16 / var(--bsr-page-ref));
