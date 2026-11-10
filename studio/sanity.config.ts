@@ -6,6 +6,7 @@ import {schemaTypes} from './schemaTypes'
 export default defineConfig({
   name: 'default',
   title: 'bsr-live',
+  basePath: '/studio',
 
   projectId: '1coo076c',
   dataset: 'production',

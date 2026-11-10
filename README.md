@@ -32,6 +32,21 @@ npm install
 npm run dev
 ```
 
+### Vercel deployment
+
+The repository is configured as a Vercel project with two services:
+
+- The Vite app is public at the root and all non-Studio paths.
+- Sanity Studio is public at `/studio` and uses Sanity authentication.
+- `/api/stream` is rewritten to the Icecast mount so the app can analyze the
+  stream from the same origin.
+
+The Spinitron API is proxied by the Vercel Function at
+`/api/spinitron/[...path]`. Add `SPINITRON_API_TOKEN` as a Vercel environment
+variable for the app service. Do not use the `VITE_` prefix: Vite exposes
+`VITE_` variables to browser code. Local development continues to use the Vite
+proxy and `VITE_SPINITRON_API_TOKEN` from `.env`.
+
 ### Environment
 
 Copy `.env.example` to `.env` and fill in values as needed:
