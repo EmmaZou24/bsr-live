@@ -17,7 +17,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const pathSegments = Array.isArray(req.query.path) ? req.query.path : [req.query.path]
+    const requestPath = new URL(req.url ?? '/', 'https://bsrlive.com').pathname
+    const pathFromUrl = requestPath.replace(/^\/api\/spinitron\/?/, '')
+    const pathSegments = Array.isArray(req.query.path)
+      ? req.query.path
+      : [req.query.path ?? pathFromUrl]
     const encodedPath = pathSegments
       .filter((segment): segment is string => typeof segment === 'string' && segment.length > 0)
       .map((segment) => encodeURIComponent(segment))
