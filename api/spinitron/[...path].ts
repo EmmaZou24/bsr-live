@@ -1,34 +1,39 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node'
+
 const SPINITRON_API_URL = 'https://spinitron.com/api'
 
-export default async function handler(request: Request): Promise<Response> {
-  if (request.method !== 'GET') {
-    return new Response('Method not allowed', {
-      status: 405,
-      headers: { Allow: 'GET' },
-    })
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'GET') {
+    res.setHeader('Allow', 'GET')
+    res.status(405).send('Method not allowed')
+    return
   }
 
   const token = process.env.SPINITRON_API_TOKEN
   if (!token) {
     console.error('SPINITRON_API_TOKEN is not configured')
-    return new Response('Spinitron is not configured', { status: 500 })
+    res.status(500).send('Spinitron is not configured')
+    return
   }
-
-  const requestUrl = new URL(request.url)
-  const apiPath = requestUrl.pathname.replace(/^\/api\/spinitron\/?/, '')
-  if (!apiPath) {
-    return new Response('A Spinitron API path is required', { status: 400 })
-  }
-
-  const encodedPath = apiPath
-    .split('/')
-    .filter(Boolean)
-    .map((segment) => encodeURIComponent(segment))
-    .join('/')
-  const upstreamUrl = new URL(`${SPINITRON_API_URL}/${encodedPath}`)
-  upstreamUrl.search = requestUrl.search
 
   try {
+    const pathSegments = Array.isArray(req.query.path) ? req.query.path : [req.query.path]
+    const encodedPath = pathSegments
+      .filter((segment): segment is string => typeof segment === 'string' && segment.length > 0)
+      .map((segment) => encodeURIComponent(segment))
+      .join('/')
+
+    if (!encodedPath) {
+      res.status(400).send('A Spinitron API path is required')
+      return
+    }
+
+    const upstreamUrl = new URL(`${SPINITRON_API_URL}/${encodedPath}`)
+    const queryIndex = req.url?.indexOf('?') ?? -1
+    if (queryIndex >= 0) {
+      upstreamUrl.search = req.url?.slice(queryIndex) ?? ''
+    }
+
     const upstreamResponse = await fetch(upstreamUrl, {
       headers: {
         Accept: 'application/json',
@@ -36,15 +41,12 @@ export default async function handler(request: Request): Promise<Response> {
       },
     })
 
-    return new Response(upstreamResponse.body, {
-      status: upstreamResponse.status,
-      headers: {
-        'Content-Type': upstreamResponse.headers.get('Content-Type') ?? 'application/json',
-        'Cache-Control': 'no-store',
-      },
-    })
+    res.status(upstreamResponse.status)
+    res.setHeader('Content-Type', upstreamResponse.headers.get('Content-Type') ?? 'application/json')
+    res.setHeader('Cache-Control', 'no-store')
+    res.send(await upstreamResponse.text())
   } catch (error) {
     console.error('Spinitron proxy request failed', error)
-    return new Response('Unable to reach Spinitron', { status: 502 })
+    res.status(502).send('Unable to reach Spinitron')
   }
 }
