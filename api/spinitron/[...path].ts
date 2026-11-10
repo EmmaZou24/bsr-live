@@ -20,21 +20,31 @@ export default async function handler(request: Request): Promise<Response> {
     return new Response('A Spinitron API path is required', { status: 400 })
   }
 
-  const upstreamUrl = new URL(`${SPINITRON_API_URL}/${apiPath}`)
+  const encodedPath = apiPath
+    .split('/')
+    .filter(Boolean)
+    .map((segment) => encodeURIComponent(segment))
+    .join('/')
+  const upstreamUrl = new URL(`${SPINITRON_API_URL}/${encodedPath}`)
   upstreamUrl.search = requestUrl.search
 
-  const upstreamResponse = await fetch(upstreamUrl, {
-    headers: {
-      Accept: 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
+  try {
+    const upstreamResponse = await fetch(upstreamUrl, {
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
-  return new Response(upstreamResponse.body, {
-    status: upstreamResponse.status,
-    headers: {
-      'Content-Type': upstreamResponse.headers.get('Content-Type') ?? 'application/json',
-      'Cache-Control': 'no-store',
-    },
-  })
+    return new Response(upstreamResponse.body, {
+      status: upstreamResponse.status,
+      headers: {
+        'Content-Type': upstreamResponse.headers.get('Content-Type') ?? 'application/json',
+        'Cache-Control': 'no-store',
+      },
+    })
+  } catch (error) {
+    console.error('Spinitron proxy request failed', error)
+    return new Response('Unable to reach Spinitron', { status: 502 })
+  }
 }

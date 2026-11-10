@@ -11,7 +11,7 @@ import type {
 const DEFAULT_API_BASE = '/api/spinitron'
 
 export function isSpinitronConfigured(): boolean {
-  return Boolean(import.meta.env.VITE_SPINITRON_ENABLED)
+  return import.meta.env.VITE_SPINITRON_ENABLED === 'true'
 }
 
 function getApiBase(): string {

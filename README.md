@@ -64,10 +64,11 @@ The sidebar header and bottom ticker use the [Spinitron v2 API](https://spinitro
 The ticker scrolls: `101.1fm brown student and community radio ⬤ on air: … ⬤ up next: …`
 
 1. Log in to Spinitron → **Admin → Automation & API**
-2. Copy your API key into `.env`:
+2. For local development, copy your API key into `.env`:
 
    ```
    VITE_SPINITRON_API_TOKEN=your_key_here
+   VITE_SPINITRON_ENABLED=true
    ```
 
 **Local dev:** Vite proxies `/api/spinitron` → `https://spinitron.com/api` and attaches the Bearer token server-side (browsers cannot call Spinitron directly).
@@ -75,8 +76,13 @@ The ticker scrolls: `101.1fm brown student and community radio ⬤ on air: … �
 **Production:** You need a server-side proxy that forwards requests to `https://spinitron.com/api` with `Authorization: Bearer <token>`. Then set:
 
 ```
+SPINITRON_API_TOKEN=your_key_here
+VITE_SPINITRON_ENABLED=true
 VITE_SPINITRON_API_BASE=https://your-domain.com/api/spinitron
 ```
+
+On Vercel, use `SPINITRON_API_TOKEN` for the private token and set
+`VITE_SPINITRON_ENABLED=true`. Do not set `VITE_SPINITRON_API_TOKEN` in Vercel.
 
 Without a token, playback still works; the sidebar shows fallback text instead of live track info.
 

@@ -1,9 +1,9 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
+
   "rewrites": [
     {
       "source": "/api/stream",
-      "destination": "https://listen.bsrlive.com/bsrmp3"
+      "destination": "https://azuracast.bsrlive.com/listen/brown_student_radio/bsr"
     },
     {
       "source": "/((?!api(?:/|$)).*)",
