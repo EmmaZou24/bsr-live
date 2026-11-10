@@ -213,7 +213,7 @@
   font-weight: 900;
   letter-spacing: -0.02em;
   line-height: 1.1;
-  cursor: pointer;
+  cursor: default;
   box-sizing: border-box;
 }
 
