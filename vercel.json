@@ -6,7 +6,7 @@
       "destination": "https://listen.bsrlive.com/bsrmp3"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api(?:/|$)).*)",
       "destination": "/index.html"
     }
   ]
