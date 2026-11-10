@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
       'import.meta.env.SANITY_DATASET': JSON.stringify(env.SANITY_DATASET),
       'import.meta.env.SANITY_API_VERSION': JSON.stringify(env.SANITY_API_VERSION),
       'import.meta.env.VITE_SPINITRON_ENABLED': JSON.stringify(
-        mode === 'production' || Boolean(env.VITE_SPINITRON_API_TOKEN),
+        String(mode === 'production' || Boolean(env.VITE_SPINITRON_API_TOKEN)),
       ),
     },
     server: {
