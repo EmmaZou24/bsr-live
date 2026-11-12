@@ -204,19 +204,23 @@ export function ArticleDetailPage() {
               </div>
 
               {article.articleImages.length > 0 ? (
-                <div className="article-detail__image-container">
-                  <figure className="article-detail__figure">
-                    <img
-                      src={article.articleImages[0].src}
-                      alt={article.articleImages[0].alt}
-                      className="article-detail__image"
-                    />
-                    {article.articleImages[0].caption ? (
-                      <figcaption className="article-detail__image-caption">
-                        {article.articleImages[0].caption}
-                      </figcaption>
-                    ) : null}
-                  </figure>
+                <div className="article-detail__images">
+                  {article.articleImages.map((image, index) => (
+                    <div className="article-detail__image-container" key={`${image.src}-${index}`}>
+                      <figure className="article-detail__figure">
+                        <img
+                          src={image.src}
+                          alt={image.alt}
+                          className="article-detail__image"
+                        />
+                        {image.caption ? (
+                          <figcaption className="article-detail__image-caption">
+                            {image.caption}
+                          </figcaption>
+                        ) : null}
+                      </figure>
+                    </div>
+                  ))}
                 </div>
               ) : null}
             </div>

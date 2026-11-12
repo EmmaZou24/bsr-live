@@ -1,6 +1,9 @@
 # bsr-live
 
-## TODO
+## Deployment
+
+- Push changes to GitHub to deploy the main app
+- Run `npm run deploy` from the `studio` root to deploy the Sanity studio
 
 ### Overall
 - Accessibility

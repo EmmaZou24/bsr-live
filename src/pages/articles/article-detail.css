@@ -71,6 +71,12 @@
   width: 100%;
 }
 
+.article-detail__images {
+  display: flex;
+  flex-direction: column;
+  gap: var(--bsr-article-detail-gap);
+}
+
 .article-detail__figure {
   width: min(90%, var(--bsr-article-detail-media-width));
   margin: 0;
@@ -188,11 +194,12 @@
 }
 
 .article-detail__image-caption {
-  margin: 0;
+  margin: var(--bsr-article-detail-gap) 0;
   font-family: var(--bsr-font);
   font-size: var(--bsr-article-detail-author-font);
   font-weight: 500;
   line-height: 1.1;
+  text-align: center;
 }
 
 .article-detail__body {
