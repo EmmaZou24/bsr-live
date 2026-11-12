@@ -15,7 +15,7 @@ const contacts = [
 const socialLinks = [
     ['Instagram', 'https://www.instagram.com/bsrlive/', 'instagram'],
     ['YouTube', 'https://www.youtube.com/channel/UCLtIFzxZ3_Yjvizxr1vCyOg', 'youtube'],
-    ['Email', 'mailto:bsr2018@gmail.com', 'email'],
+    ['Email', 'mailto:bsrlive2018@gmail.com', 'email'],
     ['Spotify', 'https://open.spotify.com/user/ndis7o6g0u1oq2xvgww7itbvt?si=f3fd671303eb431d', 'spotify'],
 ] as const
 
