@@ -211,6 +211,11 @@ export function ArticleDetailPage() {
                       alt={article.articleImages[0].alt}
                       className="article-detail__image"
                     />
+                    {article.articleImages[0].caption ? (
+                      <figcaption className="article-detail__image-caption">
+                        {article.articleImages[0].caption}
+                      </figcaption>
+                    ) : null}
                   </figure>
                 </div>
               ) : null}
@@ -258,9 +263,6 @@ export function ArticleDetailPage() {
                   </p>
                   <div className="article-detail__tags">
                     <Tag label={article.coarseTag} variant="filled" tone="white" />
-                    {article.granularTag ? (
-                      <Tag label={article.granularTag} variant="filled" tone="white" />
-                    ) : null}
                   </div>
                 </div>
               </header>

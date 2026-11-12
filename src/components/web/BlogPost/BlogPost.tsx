@@ -38,7 +38,6 @@ export function BlogPost({
   imageSrc = fallbackImage,
   imageAlt = '',
   coarseTag = 'BLOG',
-  granularTag = 'COMMUNITY',
   href,
   onAuthorClick,
   className = '',
@@ -71,7 +70,6 @@ export function BlogPost({
 
         <div className="blog-post__tags">
           {coarseTag ? <Tag label={coarseTag} variant="filled" tone="pink" /> : null}
-          {granularTag ? <Tag label={granularTag} variant="filled" tone="pink" /> : null}
         </div>
       </div>
     </>

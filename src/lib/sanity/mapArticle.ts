@@ -71,7 +71,7 @@ function mapArticleImages(article: SanityArticleDetail, card: ArticleCard): Arti
     const src = imageUrl(image)
     if (!src) return []
 
-    return [{src, alt: image.alt ?? card.title}]
+    return [{src, alt: image.alt ?? card.title, caption: image.caption}]
   })
 }
 

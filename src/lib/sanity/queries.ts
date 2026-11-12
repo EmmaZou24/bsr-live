@@ -8,6 +8,7 @@ const articleListProjection = `
   slug,
   coverImage {
     alt,
+    caption,
     asset
   }
 `
@@ -16,6 +17,7 @@ const articleDetailProjection = `
   ${articleListProjection},
   articleImages[] {
     alt,
+    caption,
     asset
   },
   body,

@@ -40,6 +40,10 @@ const articleFilterCategories: PageSearchFilterCategory[] = [
   },
 ]
 
+const visibleArticleFilterCategories = articleFilterCategories.filter(
+  (category) => category.id !== 'granular-types',
+)
+
 function getSelectedFilterLabels(
   categories: PageSearchFilterCategory[],
   selection: PageSearchSelection,
@@ -248,7 +252,7 @@ export function ArticlesPage() {
       bodyRef={bodyRef}
       search={
         <PageSearch
-          filterCategories={articleFilterCategories}
+          filterCategories={visibleArticleFilterCategories}
           selectedFilters={selectedFilters}
           onFilterChange={handleFilterChange}
           onSearchChange={handleSearchChange}

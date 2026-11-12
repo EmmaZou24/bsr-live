@@ -67,6 +67,11 @@ export const sharedArticleFields = [
             title: 'Alt text',
             type: 'string',
           }),
+          defineField({
+            name: 'caption',
+            title: 'Caption',
+            type: 'string',
+          }),
         ],
       },
     ],

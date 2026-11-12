@@ -187,6 +187,14 @@
   letter-spacing: -0.02em;
 }
 
+.article-detail__image-caption {
+  margin: 0;
+  font-family: var(--bsr-font);
+  font-size: var(--bsr-article-detail-author-font);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
 .article-detail__body {
   display: flex;
   flex-direction: column;

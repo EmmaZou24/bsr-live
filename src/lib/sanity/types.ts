@@ -8,6 +8,7 @@ export type SanitySlug = {
 
 export type SanityImage = {
   alt?: string
+  caption?: string
   asset?: {
     _ref: string
     _type: 'reference'
@@ -55,6 +56,7 @@ export type ArticleCard = {
 export type ArticleImage = {
   src: string
   alt: string
+  caption?: string
 }
 
 export type ArticleDetail = ArticleCard & {
