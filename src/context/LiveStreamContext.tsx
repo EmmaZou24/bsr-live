@@ -19,6 +19,8 @@ import { resumeStreamAudio } from '../lib/streamAudioGraph'
 import type { NowPlaying } from '../lib/spinitron/types'
 
 const NOW_PLAYING_POLL_MS = 30_000
+const STREAM_STALL_TIMEOUT_MS = 15_000
+const STREAM_RECONNECT_DELAYS_MS = [0, 1_000, 3_000, 10_000, 30_000]
 
 const defaultLive = getDefaultLiveBroadcast()
 
@@ -44,6 +46,10 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [isStreamLoading, setIsStreamLoading] = useState(false)
   const [isLoadingNowPlaying, setIsLoadingNowPlaying] = useState(isSpinitronConfigured())
+  const shouldReconnectStreamRef = useRef(false)
+  const reconnectTimeoutRef = useRef<number | null>(null)
+  const stallTimeoutRef = useRef<number | null>(null)
+  const reconnectAttemptRef = useRef(0)
 
   const refreshNowPlaying = useCallback(async () => {
     if (!isSpinitronConfigured()) {
@@ -86,6 +92,48 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
     })
   }, [preloadStream])
 
+  const clearStreamTimers = useCallback(() => {
+    if (reconnectTimeoutRef.current !== null) {
+      window.clearTimeout(reconnectTimeoutRef.current)
+      reconnectTimeoutRef.current = null
+    }
+
+    if (stallTimeoutRef.current !== null) {
+      window.clearTimeout(stallTimeoutRef.current)
+      stallTimeoutRef.current = null
+    }
+  }, [])
+
+  const reconnectStream = useCallback(() => {
+    if (!shouldReconnectStreamRef.current || reconnectTimeoutRef.current !== null) return
+
+    const audio = audioRef.current
+    if (!audio) return
+
+    const attempt = reconnectAttemptRef.current
+    const delay =
+      STREAM_RECONNECT_DELAYS_MS[Math.min(attempt, STREAM_RECONNECT_DELAYS_MS.length - 1)]
+
+    setIsStreamLoading(true)
+    reconnectTimeoutRef.current = window.setTimeout(() => {
+      reconnectTimeoutRef.current = null
+      if (!shouldReconnectStreamRef.current) return
+
+      reconnectAttemptRef.current += 1
+      audio.load()
+      void audio.play().catch((error) => {
+        if (!shouldReconnectStreamRef.current) return
+        console.error('Failed to reconnect live stream', error)
+        reconnectStream()
+      })
+    }, delay)
+  }, [])
+
+  const scheduleStreamReconnect = useCallback(() => {
+    clearStreamTimers()
+    reconnectStream()
+  }, [clearStreamTimers, reconnectStream])
+
   useEffect(() => {
     if (document.readyState === 'complete') {
       preloadStream()
@@ -101,6 +149,10 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
     if (!audio) return
 
     if (audio.paused) {
+      shouldReconnectStreamRef.current = true
+      reconnectAttemptRef.current = 0
+      clearStreamTimers()
+
       if (audio.error) {
         preloadStream()
       }
@@ -117,8 +169,17 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
       return
     }
 
+    shouldReconnectStreamRef.current = false
+    clearStreamTimers()
     audio.pause()
-  }, [preloadStream])
+  }, [clearStreamTimers, preloadStream])
+
+  useEffect(() => {
+    return () => {
+      shouldReconnectStreamRef.current = false
+      clearStreamTimers()
+    }
+  }, [clearStreamTimers])
 
   return (
     <LiveStreamContext.Provider
@@ -142,6 +203,8 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
         onPlaying={() => {
           const audio = audioRef.current
           if (!audio || audio.paused) return
+          clearStreamTimers()
+          reconnectAttemptRef.current = 0
           resumeStreamAudio(audio)
           setIsPlaying(true)
           setIsStreamLoading(false)
@@ -149,16 +212,39 @@ export function LiveStreamProvider({ children }: { children: ReactNode }) {
         onPause={() => {
           setIsPlaying(false)
           setIsStreamLoading(false)
-          scheduleStreamPreload()
+          if (shouldReconnectStreamRef.current) {
+            scheduleStreamReconnect()
+          } else {
+            scheduleStreamPreload()
+          }
         }}
         onEnded={() => {
           setIsPlaying(false)
           setIsStreamLoading(false)
+          if (shouldReconnectStreamRef.current) scheduleStreamReconnect()
         }}
         onError={() => {
           setIsPlaying(false)
-          setIsStreamLoading(false)
+          if (shouldReconnectStreamRef.current) {
+            scheduleStreamReconnect()
+          } else {
+            setIsStreamLoading(false)
+          }
           console.error('Live stream playback error', audioRef.current?.error)
+        }}
+        onStalled={() => {
+          if (!shouldReconnectStreamRef.current || stallTimeoutRef.current !== null) return
+          stallTimeoutRef.current = window.setTimeout(() => {
+            stallTimeoutRef.current = null
+            if (shouldReconnectStreamRef.current) scheduleStreamReconnect()
+          }, STREAM_STALL_TIMEOUT_MS)
+        }}
+        onWaiting={() => {
+          if (!shouldReconnectStreamRef.current || stallTimeoutRef.current !== null) return
+          stallTimeoutRef.current = window.setTimeout(() => {
+            stallTimeoutRef.current = null
+            if (shouldReconnectStreamRef.current) scheduleStreamReconnect()
+          }, STREAM_STALL_TIMEOUT_MS)
         }}
       />
       {children}
