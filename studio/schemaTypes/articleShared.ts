@@ -33,6 +33,11 @@ export const sharedArticleFields = [
     validation: (rule) => rule.required(),
   }),
   defineField({
+    name: 'subtitle',
+    title: 'Subtitle',
+    type: 'string',
+  }),
+  defineField({
     name: 'slug',
     title: 'Slug',
     type: 'slug',

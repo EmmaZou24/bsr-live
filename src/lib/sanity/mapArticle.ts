@@ -84,6 +84,7 @@ export function mapArticleToCard(article: SanityArticleListItem): ArticleCard {
     id: article._id,
     kind: article._type,
     title: article.title,
+    subtitle: article.subtitle,
     author: article.author,
     date: formatArticleDate(article.publishedAt),
     coarseTag,

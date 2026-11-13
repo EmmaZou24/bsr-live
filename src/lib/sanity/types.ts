@@ -19,6 +19,7 @@ export type SanityArticleListItem = {
   _id: string
   _type: ArticleKind
   title: string
+  subtitle?: string
   author: string
   publishedAt: string
   granularTag?: string
@@ -43,6 +44,7 @@ export type ArticleCard = {
   id: string
   kind: ArticleKind
   title: string
+  subtitle?: string
   author: string
   date: string
   coarseTag: string

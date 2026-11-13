@@ -268,6 +268,7 @@ export function ArticlesPage() {
           <BlogPost
             key={article.id}
             title={article.title}
+            subtitle={article.subtitle}
             author={article.author}
             date={article.date}
             imageSrc={article.imageSrc}

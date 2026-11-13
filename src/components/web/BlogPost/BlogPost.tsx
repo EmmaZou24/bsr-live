@@ -20,6 +20,7 @@ function accentFromCoarseTag(coarseTag: string): BlogPostAccent {
 
 export type BlogPostProps = {
   title?: string
+  subtitle?: string
   author?: string
   date?: string
   imageSrc?: string
@@ -33,6 +34,7 @@ export type BlogPostProps = {
 
 export function BlogPost({
   title = 'Where Did The Rhode Island Music Scene Go?',
+  subtitle,
   author = 'millie cheng',
   date = 'July 12th, 2026',
   imageSrc = fallbackImage,
@@ -56,6 +58,7 @@ export function BlogPost({
       <div className="blog-post__body">
         <div className="blog-post__text">
           <h2 className="blog-post__title">{title}</h2>
+          {subtitle ? <p className="blog-post__subtitle">{subtitle}</p> : null}
           <p className="blog-post__author">
             by{' '}
             <button

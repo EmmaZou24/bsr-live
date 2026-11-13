@@ -2,6 +2,29 @@
   padding: 0;
 }
 
+.schedule-page__content {
+  display: grid;
+  width: 100%;
+}
+
+.schedule-page__image,
+.schedule-page__header {
+  grid-area: 1 / 1;
+}
+
+.schedule-page__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  align-self: start;
+  width: 100%;
+  aspect-ratio: 3524 / 132;
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  border-bottom: var(--bsr-border);
+}
+
 .schedule-page__image {
   display: block;
   width: 100%;

@@ -261,6 +261,9 @@ export function ArticleDetailPage() {
             <div id="article-detail-content" className="article-detail__text">
               <header className="article-detail__header">
                 <h1 className="article-detail__title">{article.title}</h1>
+                {article.subtitle ? (
+                  <p className="article-detail__subtitle">{article.subtitle}</p>
+                ) : null}
                 <div className="article-detail__byline">
                   <p className="article-detail__author">
                     by <span className="article-detail__author-name">{article.author}</span>

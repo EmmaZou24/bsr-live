@@ -102,6 +102,15 @@
   line-height: 1;
 }
 
+.blog-post__subtitle {
+  margin: 0;
+  font-family: var(--bsr-font);
+  font-size: calc(var(--bsr-card-width) * 14 / var(--bsr-card-ref));
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
 .blog-post__author {
   margin: 0;
   font-family: var(--bsr-font);

@@ -2,6 +2,7 @@ const articleListProjection = `
   _id,
   _type,
   title,
+  subtitle,
   author,
   publishedAt,
   granularTag,
