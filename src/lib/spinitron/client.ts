@@ -10,6 +10,19 @@ import type {
 
 const DEFAULT_API_BASE = '/api/spinitron'
 
+class SpinitronRequestError extends Error {
+  readonly status: number
+
+  constructor(
+    status: number,
+    path: string,
+  ) {
+    super(`Spinitron request failed (${status}) for ${path}`)
+    this.name = 'SpinitronRequestError'
+    this.status = status
+  }
+}
+
 export function isSpinitronConfigured(): boolean {
   return import.meta.env.VITE_SPINITRON_ENABLED === 'true'
 }
@@ -44,7 +57,7 @@ async function spinitronFetch<T>(path: string): Promise<T | null> {
   })
 
   if (!response.ok) {
-    throw new Error(`Spinitron request failed (${response.status}) for ${path}`)
+    throw new SpinitronRequestError(response.status, path)
   }
 
   return (await response.json()) as T
@@ -57,8 +70,16 @@ async function fetchPersonaName(show: SpinitronShow): Promise<string | undefined
   const personaPath = personaPathFromHref(personaHref)
   if (!personaPath) return undefined
 
-  const persona = await spinitronFetch<SpinitronPersona>(personaPath)
-  return persona?.name
+  try {
+    const persona = await spinitronFetch<SpinitronPersona>(personaPath)
+    return persona?.name
+  } catch (error) {
+    if (error instanceof SpinitronRequestError && error.status === 404) {
+      return undefined
+    }
+
+    throw error
+  }
 }
 
 function formatSongLabel(spin?: SpinitronSpin): string {
