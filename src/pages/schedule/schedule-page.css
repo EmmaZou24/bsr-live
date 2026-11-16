@@ -22,7 +22,6 @@
   background-position: top;
   background-repeat: no-repeat;
   background-size: 100% auto;
-  border-bottom: var(--bsr-border);
 }
 
 .schedule-page__image {

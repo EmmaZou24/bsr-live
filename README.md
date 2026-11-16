@@ -92,6 +92,8 @@ Without a token, playback still works; the sidebar shows fallback text instead o
 ### Live stream
 
 Playback uses the BSR Icecast mount (`https://listen.bsrlive.com/bsrmp3` by default in production).
+The player automatically reconnects with backoff after an ended, failed, or prolonged stalled
+stream, while intentional pauses remain paused.
 
 | Variable | Purpose |
 |----------|---------|
